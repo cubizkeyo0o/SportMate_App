@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import com.sportmate.app.data.local.TokenStorage;
 import com.sportmate.app.data.remote.ApiCallExecutor;
 import com.sportmate.app.data.remote.api.AuthApi;
+import com.sportmate.app.data.remote.api.UserApi;
 import com.sportmate.app.data.remote.dto.LoginRequestDto;
 import com.sportmate.app.data.remote.dto.RefreshTokenRequestDto;
 import com.sportmate.app.data.remote.dto.RegisterRequestDto;
@@ -22,19 +23,44 @@ import javax.inject.Singleton;
 @Singleton
 public final class AuthRepositoryImpl implements AuthRepository {
     private final AuthApi authApi;
+    private final UserApi userApi;
     private final TokenStorage tokenStorage;
     private final ApiCallExecutor executor;
 
     @Inject
-    public AuthRepositoryImpl(AuthApi authApi, TokenStorage tokenStorage, ApiCallExecutor executor) {
+    public AuthRepositoryImpl(
+            AuthApi authApi,
+            UserApi userApi,
+            TokenStorage tokenStorage,
+            ApiCallExecutor executor) {
         this.authApi = authApi;
+        this.userApi = userApi;
         this.tokenStorage = tokenStorage;
         this.executor = executor;
     }
 
     @Override
-    public boolean hasSession() {
-        return tokenStorage.getRefreshToken() != null;
+    public boolean hasStoredSession() {
+        String accessToken = tokenStorage.getAccessToken();
+        return accessToken != null && !accessToken.isEmpty();
+    }
+
+    @Override
+    public Cancellable restoreSession(ResultCallback<User> callback) {
+        return executor.execute(userApi.getMe(), DtoMapper::toUser, new ResultCallback<User>() {
+            @Override
+            public void onSuccess(User user) {
+                callback.onSuccess(user);
+            }
+
+            @Override
+            public void onError(@NonNull AppError error) {
+                if (error.getKind() == AppError.Kind.UNAUTHORIZED) {
+                    tokenStorage.clear();
+                }
+                callback.onError(error);
+            }
+        });
     }
 
     @Override
@@ -68,28 +94,18 @@ public final class AuthRepositoryImpl implements AuthRepository {
 
     @Override
     public Cancellable logout(ResultCallback<Void> callback) {
+        String accessToken = tokenStorage.getAccessToken();
         String refreshToken = tokenStorage.getRefreshToken();
-        if (refreshToken == null) {
-            tokenStorage.clear();
+        tokenStorage.clear();
+
+        if (accessToken == null || refreshToken == null) {
             callback.onSuccess(null);
             return () -> { };
         }
 
-        // Clear only once the backend has answered: logout needs the access token attached.
+        // Tokens are already cleared, so the captured access token is attached explicitly.
         return executor.executeNoContent(
-                authApi.logout(new RefreshTokenRequestDto(refreshToken)),
-                new ResultCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        tokenStorage.clear();
-                        callback.onSuccess(null);
-                    }
-
-                    @Override
-                    public void onError(@NonNull AppError error) {
-                        tokenStorage.clear();
-                        callback.onError(error);
-                    }
-                });
+                authApi.logout("Bearer " + accessToken, new RefreshTokenRequestDto(refreshToken)),
+                callback);
     }
 }

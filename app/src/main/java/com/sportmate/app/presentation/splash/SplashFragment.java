@@ -9,35 +9,52 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.sportmate.app.R;
 import com.sportmate.app.databinding.FragmentSplashBinding;
+import com.sportmate.app.domain.common.AppError;
+import com.sportmate.app.presentation.common.ErrorMessages;
+import com.sportmate.app.presentation.session.AuthState;
+import com.sportmate.app.presentation.session.SessionViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * Shown while the stored session is checked. MainActivity navigates away once the session is
+ * resolved; if the check fails for a non-auth reason this screen offers a retry.
+ */
 @AndroidEntryPoint
 public final class SplashFragment extends Fragment {
+    private FragmentSplashBinding binding;
+
     @Nullable
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return FragmentSplashBinding.inflate(inflater, container, false).getRoot();
+        binding = FragmentSplashBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        SplashViewModel viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
-        viewModel.getDestination().observe(getViewLifecycleOwner(), event -> {
-            SplashViewModel.Destination destination = event.getContentIfNotHandled();
-            if (destination == null) {
-                return;
-            }
-            NavHostFragment.findNavController(this).navigate(destination == SplashViewModel.Destination.MAIN
-                    ? R.id.action_global_main
-                    : R.id.action_global_auth);
-        });
+        SessionViewModel sessionViewModel = new ViewModelProvider(requireActivity()).get(SessionViewModel.class);
+        binding.retryButton.setOnClickListener(v -> sessionViewModel.retry());
+        sessionViewModel.getAuthState().observe(getViewLifecycleOwner(), this::render);
+    }
+
+    private void render(AuthState state) {
+        boolean failed = state.getStatus() == AuthState.Status.ERROR;
+        binding.progress.setVisibility(failed ? View.GONE : View.VISIBLE);
+        binding.retryButton.setVisibility(failed ? View.VISIBLE : View.GONE);
+        binding.errorMessage.setVisibility(failed ? View.VISIBLE : View.GONE);
+        AppError error = state.getError();
+        binding.errorMessage.setText(error == null ? null : ErrorMessages.resolve(requireContext(), error));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

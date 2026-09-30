@@ -13,8 +13,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.sportmate.app.R;
 import com.sportmate.app.databinding.FragmentHomeBinding;
 import com.sportmate.app.domain.common.AppError;
+import com.sportmate.app.domain.model.User;
 import com.sportmate.app.presentation.common.ErrorMessages;
 import com.sportmate.app.presentation.common.UiState;
+import com.sportmate.app.presentation.session.SessionViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -37,6 +39,14 @@ public final class HomeFragment extends Fragment {
         HomeViewModel viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding.retryButton.setOnClickListener(v -> viewModel.checkBackend());
         viewModel.getBackendStatus().observe(getViewLifecycleOwner(), this::render);
+
+        // Logging out makes MainActivity return to the auth flow.
+        SessionViewModel sessionViewModel = new ViewModelProvider(requireActivity()).get(SessionViewModel.class);
+        binding.logoutButton.setOnClickListener(v -> sessionViewModel.logout());
+        sessionViewModel.getAuthState().observe(getViewLifecycleOwner(), state -> {
+            User user = state.getUser();
+            binding.signedInAs.setText(user == null ? null : getString(R.string.home_signed_in_as, user.getDisplayName()));
+        });
     }
 
     private void render(UiState<Boolean> state) {

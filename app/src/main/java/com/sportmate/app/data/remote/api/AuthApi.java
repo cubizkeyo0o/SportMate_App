@@ -8,6 +8,7 @@ import com.sportmate.app.data.remote.dto.UserResponseDto;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface AuthApi {
@@ -18,7 +19,12 @@ public interface AuthApi {
     @POST("api/v1/auth/login")
     Call<AuthResponseDto> login(@Body LoginRequestDto request);
 
-    /** Requires the access token. 204 on success. */
+    /**
+     * Requires the access token, passed explicitly because local tokens are cleared before the call.
+     * 204 on success.
+     */
     @POST("api/v1/auth/logout")
-    Call<Void> logout(@Body RefreshTokenRequestDto request);
+    Call<Void> logout(
+            @Header("Authorization") String authorization,
+            @Body RefreshTokenRequestDto request);
 }

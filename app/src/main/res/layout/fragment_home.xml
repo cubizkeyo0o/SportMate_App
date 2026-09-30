@@ -13,6 +13,14 @@
         android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.SportMate.Title" />
 
+    <TextView
+        android:id="@+id/signed_in_as"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.SportMate.Body" />
+
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
         android:layout_width="wrap_content"
@@ -36,4 +44,12 @@
         android:layout_marginTop="@dimen/spacing_md"
         android:text="@string/action_retry"
         android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/logout_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xl"
+        android:text="@string/action_logout" />
 </LinearLayout>
