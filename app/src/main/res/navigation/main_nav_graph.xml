@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Main flow after sign-in; reachable only through MainActivity once the session is authenticated.
-    Courts, bookings and play request destinations are added here as those features are built.
+    Bookings and play request destinations are added here as those features are built.
 -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,10 +15,32 @@
         <action
             android:id="@+id/action_home_to_profile"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_home_to_courts"
+            app:destination="@id/courtsFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.sportmate.app.presentation.profile.ProfileFragment"
         android:label="@string/profile_title" />
+
+    <fragment
+        android:id="@+id/courtsFragment"
+        android:name="com.sportmate.app.presentation.courts.CourtsFragment"
+        android:label="@string/courts_title">
+        <action
+            android:id="@+id/action_courts_to_court_detail"
+            app:destination="@id/courtDetailFragment" />
+    </fragment>
+
+    <!-- Loads the court itself from its id; the court object is not passed along. -->
+    <fragment
+        android:id="@+id/courtDetailFragment"
+        android:name="com.sportmate.app.presentation.courts.CourtDetailFragment"
+        android:label="@string/court_detail_title">
+        <argument
+            android:name="courtId"
+            app:argType="string" />
+    </fragment>
 </navigation>

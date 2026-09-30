@@ -36,6 +36,7 @@ presentation/
   session/               SessionManager (app-wide AuthState), SessionViewModel
   splash/ auth/ home/    One package per feature: Fragment + ViewModel
   profile/               Account details and sport profiles
+  courts/                Court discovery: list and detail
 ```
 
 Flow: Fragment -> ViewModel (LiveData) -> repository interface -> Retrofit. Fragments and ViewModels never call Retrofit directly.
@@ -43,6 +44,8 @@ Flow: Fragment -> ViewModel (LiveData) -> repository interface -> Retrofit. Frag
 Authentication: `SessionManager` holds the single `AuthState` (loading, unauthenticated, authenticated, error). At startup it validates a stored access token with `GET /api/v1/users/me`; a 401 clears the tokens. `MainActivity` is the only place that switches between `auth_nav_graph` (Welcome, Login, Register) and `main_nav_graph`, and both switches clear the back stack. Registering does not sign in (the backend returns no tokens), so it leads to Login. Logging out clears local tokens immediately and asks the backend to revoke the refresh token best-effort.
 
 Profile (Home → My profile): shows email, role and account status read-only and edits display name and phone (`GET`/`PUT /api/v1/users/me`; an empty phone clears it). The sport list (`GET /api/v1/users/me/sports`) adds or changes a skill level with `PUT /api/v1/users/me/sports/{sportId}` and removes with `DELETE` on the same path; sports that can be added come from `GET /api/v1/sports` (active sports only). Client-side validation mirrors the backend's rules; the backend stays authoritative.
+
+Courts (Home → Courts → court): lists active courts (`GET /api/v1/discovery/courts`) and shows a court's details, sports with hourly price and currency, and weekly operating hours (`GET /api/v1/discovery/courts/{courtId}`, `.../sports`, `.../operating-hours`). The detail screen loads the court by id and each section loads, fails and retries on its own; an inactive or unknown court shows "Court not found". Operating hours are the court's local wall-clock times, displayed exactly as the backend sends them (Sunday first, days without periods shown as Closed) and never converted to the device time zone.
 
 Tokens are stored in app-private SharedPreferences and excluded from backup and device transfer. Network logging is debug-only at `BASIC` level (request line and status, no headers or bodies); do not raise it to `BODY`, which would log passwords and tokens. Expired access tokens are not refreshed automatically yet.
 

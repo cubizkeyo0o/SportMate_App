@@ -41,6 +41,8 @@ public final class HomeFragment extends Fragment {
         binding.retryButton.setOnClickListener(v -> viewModel.checkBackend());
         viewModel.getBackendStatus().observe(getViewLifecycleOwner(), this::render);
 
+        binding.courtsButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.action_home_to_courts));
         binding.profileButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_home_to_profile));
 

@@ -68,8 +68,36 @@
     <string name="skill_advanced">Advanced</string>
     <string name="skill_expert">Expert</string>
 
+    <!-- Courts -->
+    <string name="courts_title">Courts</string>
+    <string name="courts_empty">No courts available</string>
+    <string name="court_detail_title">Court</string>
+    <string name="court_not_found">Court not found</string>
+    <string name="court_status_active">Accepting online bookings</string>
+    <string name="court_status_inactive">Not accepting online bookings</string>
+    <string name="court_address">Address</string>
+    <string name="court_city">City</string>
+    <string name="court_coordinates">Coordinates</string>
+    <string name="court_coordinates_value">%1$s, %2$s</string>
+    <string name="court_sports_section">Sports</string>
+    <string name="court_sports_empty">This court does not offer any sports yet.</string>
+    <string name="court_sport_price">%1$s %2$s per hour</string>
+    <string name="court_hours_section">Operating hours</string>
+    <string name="court_hours_time_zone">Local time at the court (%1$s)</string>
+    <string name="court_hours_empty">No operating hours published yet.</string>
+    <string name="court_hours_closed">Closed</string>
+    <string name="court_hours_period">%1$s – %2$s</string>
+    <string name="day_sunday">Sunday</string>
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+
     <!-- Home -->
     <string name="home_signed_in_as">Signed in as %1$s</string>
+    <string name="action_courts">Courts</string>
     <string name="action_profile">My profile</string>
     <string name="home_backend_checking">Checking backend connection…</string>
     <string name="home_backend_ok">Backend connected.</string>

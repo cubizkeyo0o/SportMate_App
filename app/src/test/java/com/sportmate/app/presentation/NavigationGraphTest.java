@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.sportmate.app.presentation.courts.CourtDetailViewModel;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,6 +44,40 @@ public class NavigationGraphTest {
         Element home = destination(parse("main_nav_graph.xml"), "@+id/homeFragment");
         Element action = childAction(home, "@+id/action_home_to_profile");
         assertEquals("@id/profileFragment", action.getAttributeNS(APP, "destination"));
+    }
+
+    @Test
+    public void homeLeadsToCourtsAndCourtsToDetailWithARequiredCourtId() throws Exception {
+        for (String graph : new String[] {"auth_nav_graph.xml", "nav_graph.xml"}) {
+            assertFalse(destinationIds(graph).contains("@+id/courtsFragment"));
+            assertFalse(destinationIds(graph).contains("@+id/courtDetailFragment"));
+        }
+        Document main = parse("main_nav_graph.xml");
+        assertEquals("@id/courtsFragment",
+                childAction(destination(main, "@+id/homeFragment"), "@+id/action_home_to_courts")
+                        .getAttributeNS(APP, "destination"));
+        assertEquals("@id/courtDetailFragment",
+                childAction(destination(main, "@+id/courtsFragment"), "@+id/action_courts_to_court_detail")
+                        .getAttributeNS(APP, "destination"));
+
+        Element argument = childElement(destination(main, "@+id/courtDetailFragment"), "argument");
+        assertEquals(CourtDetailViewModel.ARG_COURT_ID, argument.getAttributeNS(ANDROID, "name"));
+        assertEquals("string", argument.getAttributeNS(APP, "argType"));
+        // Required: no default and not nullable.
+        assertFalse(argument.hasAttributeNS(ANDROID, "defaultValue"));
+        assertFalse("true".equals(argument.getAttributeNS(APP, "nullable")));
+    }
+
+    @Test
+    public void discoveryNavigationKeepsTheBackStack() throws Exception {
+        Document main = parse("main_nav_graph.xml");
+        for (Element action : new Element[] {
+                childAction(destination(main, "@+id/homeFragment"), "@+id/action_home_to_courts"),
+                childAction(destination(main, "@+id/courtsFragment"), "@+id/action_courts_to_court_detail")}) {
+            // Without popUpTo, Back returns Court Detail -> Courts -> Home.
+            assertFalse(action.hasAttributeNS(APP, "popUpTo"));
+            assertFalse(action.hasAttributeNS(APP, "popUpToInclusive"));
+        }
     }
 
     @Test
@@ -115,6 +151,16 @@ public class NavigationGraphTest {
             }
         }
         throw new AssertionError("no destination " + id);
+    }
+
+    private static Element childElement(Element parent, String tag) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if (children.item(i) instanceof Element && tag.equals(((Element) children.item(i)).getTagName())) {
+                return (Element) children.item(i);
+            }
+        }
+        throw new AssertionError("no " + tag);
     }
 
     private static Element childAction(Element parent, String id) {
