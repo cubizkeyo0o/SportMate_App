@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_home_to_courts"
             app:destination="@id/courtsFragment" />
+        <action
+            android:id="@+id/action_home_to_my_bookings"
+            app:destination="@id/myBookingsFragment" />
     </fragment>
 
     <fragment
@@ -42,5 +45,66 @@
         <argument
             android:name="courtId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_court_detail_to_book_court"
+            app:destination="@id/bookCourtFragment" />
+    </fragment>
+
+    <!-- Booking. Screens receive ids and court-local values only; each loads its own data. -->
+    <fragment
+        android:id="@+id/bookCourtFragment"
+        android:name="com.sportmate.app.presentation.booking.BookCourtFragment"
+        android:label="@string/book_court_title">
+        <argument
+            android:name="courtId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_book_court_to_summary"
+            app:destination="@id/bookingSummaryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookingSummaryFragment"
+        android:name="com.sportmate.app.presentation.booking.BookingSummaryFragment"
+        android:label="@string/booking_summary_title">
+        <argument
+            android:name="courtId"
+            app:argType="string" />
+        <argument
+            android:name="courtSportId"
+            app:argType="string" />
+        <argument
+            android:name="date"
+            app:argType="string" />
+        <argument
+            android:name="startTime"
+            app:argType="string" />
+        <argument
+            android:name="endTime"
+            app:argType="string" />
+        <!-- The summary and time selection are removed once the booking exists, so Back cannot
+             lead to creating it again. Back from the booking returns to the court. -->
+        <action
+            android:id="@+id/action_summary_to_booking_detail"
+            app:destination="@id/bookingDetailFragment"
+            app:popUpTo="@id/courtDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookingDetailFragment"
+        android:name="com.sportmate.app.presentation.booking.BookingDetailFragment"
+        android:label="@string/booking_detail_title">
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myBookingsFragment"
+        android:name="com.sportmate.app.presentation.booking.MyBookingsFragment"
+        android:label="@string/my_bookings_title">
+        <action
+            android:id="@+id/action_my_bookings_to_booking_detail"
+            app:destination="@id/bookingDetailFragment" />
     </fragment>
 </navigation>

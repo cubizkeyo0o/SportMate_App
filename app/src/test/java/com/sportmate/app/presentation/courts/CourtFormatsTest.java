@@ -10,23 +10,11 @@ import com.sportmate.app.domain.model.Weekday;
 
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class CourtFormatsTest {
-    @Test
-    public void amountUsesCurrencyDecimalsWithoutLosingPrecision() {
-        assertEquals("150,000", CourtFormats.amount(new BigDecimal("150000.00"), "VND", Locale.US));
-        assertEquals("150,000.5", CourtFormats.amount(new BigDecimal("150000.50"), "VND", Locale.US));
-        assertEquals("12.50", CourtFormats.amount(new BigDecimal("12.5"), "USD", Locale.US));
-        assertEquals("0.00", CourtFormats.amount(BigDecimal.ZERO, "USD", Locale.US));
-        assertEquals("1,234.56", CourtFormats.amount(new BigDecimal("1234.56"), "ZZZ", Locale.US));
-        assertEquals("150.000", CourtFormats.amount(new BigDecimal("150000"), "VND", Locale.GERMANY));
-    }
-
     @Test
     public void byDayListsAllSevenDaysSundayFirstWithClosedDaysEmpty() {
         List<OperatingHour> hours = Arrays.asList(

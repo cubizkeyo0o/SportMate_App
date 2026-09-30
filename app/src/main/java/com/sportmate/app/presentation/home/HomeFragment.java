@@ -43,6 +43,8 @@ public final class HomeFragment extends Fragment {
 
         binding.courtsButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_home_to_courts));
+        binding.myBookingsButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.action_home_to_my_bookings));
         binding.profileButton.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_home_to_profile));
 

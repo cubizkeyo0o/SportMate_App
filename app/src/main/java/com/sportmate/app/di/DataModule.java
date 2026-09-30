@@ -3,12 +3,14 @@ package com.sportmate.app.di;
 import com.sportmate.app.data.local.SharedPreferencesTokenStorage;
 import com.sportmate.app.data.local.TokenStorage;
 import com.sportmate.app.data.repository.AuthRepositoryImpl;
+import com.sportmate.app.data.repository.BookingRepositoryImpl;
 import com.sportmate.app.data.repository.CourtDiscoveryRepositoryImpl;
 import com.sportmate.app.data.repository.HealthRepositoryImpl;
 import com.sportmate.app.data.repository.SportRepositoryImpl;
 import com.sportmate.app.data.repository.UserRepositoryImpl;
 import com.sportmate.app.data.repository.UserSportProfileRepositoryImpl;
 import com.sportmate.app.domain.repository.AuthRepository;
+import com.sportmate.app.domain.repository.BookingRepository;
 import com.sportmate.app.domain.repository.CourtDiscoveryRepository;
 import com.sportmate.app.domain.repository.HealthRepository;
 import com.sportmate.app.domain.repository.SportRepository;
@@ -44,4 +46,7 @@ public abstract class DataModule {
 
     @Binds
     abstract CourtDiscoveryRepository bindCourtDiscoveryRepository(CourtDiscoveryRepositoryImpl impl);
+
+    @Binds
+    abstract BookingRepository bindBookingRepository(BookingRepositoryImpl impl);
 }

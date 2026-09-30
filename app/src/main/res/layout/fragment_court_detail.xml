@@ -128,6 +128,22 @@
                     android:textAppearance="@style/TextAppearance.SportMate.Value"
                     android:textIsSelectable="true" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/book_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:enabled="false"
+                    android:text="@string/action_book_court" />
+
+                <TextView
+                    android:id="@+id/book_unavailable_reason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:textAppearance="@style/TextAppearance.SportMate.Body"
+                    android:visibility="gone" />
+
                 <!-- Sports -->
                 <TextView
                     android:layout_width="wrap_content"

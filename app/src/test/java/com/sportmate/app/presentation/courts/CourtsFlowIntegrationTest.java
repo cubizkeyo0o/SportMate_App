@@ -147,7 +147,7 @@ public class CourtsFlowIntegrationTest {
             if ((base + "/" + COURT_ID + "/sports").equals(path)) {
                 return sportsFail
                         ? new MockResponse().setResponseCode(500)
-                        : json("[{\"sport\":{\"id\":\"s-1\",\"name\":\"Badminton\",\"slug\":\"badminton\"},"
+                        : json("[{\"court_sport_id\":\"cs-1\",\"sport\":{\"id\":\"s-1\",\"name\":\"Badminton\",\"slug\":\"badminton\"},"
                                 + "\"price_per_hour\":150000.00,\"currency\":\"VND\",\"is_active\":true}]");
             }
             if ((base + "/" + COURT_ID + "/operating-hours").equals(path)) {

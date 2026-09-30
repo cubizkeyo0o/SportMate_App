@@ -95,6 +95,87 @@
     <string name="day_friday">Friday</string>
     <string name="day_saturday">Saturday</string>
 
+    <!-- Booking: court detail entry -->
+    <string name="action_book_court">Book court</string>
+    <string name="book_unavailable_inactive">This court is not accepting online bookings.</string>
+    <string name="book_unavailable_no_sports">This court does not offer any sports to book yet.</string>
+    <string name="book_unavailable_no_hours">This court has not published operating hours yet, so it cannot be booked.</string>
+    <string name="book_unavailable_not_loaded">Load the court\'s sports and operating hours to book it.</string>
+
+    <!-- Booking: choose sport and time -->
+    <string name="book_court_title">Book court</string>
+    <string name="booking_step_sport">1. Sport</string>
+    <string name="booking_step_time">2. Date and time</string>
+    <string name="booking_sport_option">%1$s — %2$s %3$s per hour</string>
+    <string name="booking_time_zone_note">All times are local time at the court (%1$s).</string>
+    <string name="booking_choose_date">Choose date</string>
+    <string name="booking_start_time">Start time</string>
+    <string name="booking_end_time">End time</string>
+    <string name="booking_start_value">From %1$s</string>
+    <string name="booking_end_value">Until %1$s</string>
+    <string name="booking_day_hours">Open on %1$s: %2$s</string>
+    <string name="booking_day_closed">Closed on %1$s</string>
+    <string name="booking_continue">Review booking</string>
+    <string name="booking_error_choose_sport">Choose a sport.</string>
+    <string name="booking_error_choose_date">Choose a date.</string>
+    <string name="booking_error_choose_times">Choose a start and an end time.</string>
+    <string name="booking_error_end_after_start">The end time must be later than the start time.</string>
+    <string name="booking_error_time_not_exist">That time does not exist at the court on this day (daylight-saving change). Choose another time.</string>
+    <string name="booking_error_start_in_future">The start time must be in the future.</string>
+    <string name="booking_error_closed_day">The court is closed on this day.</string>
+    <string name="booking_error_outside_hours">Choose a time within the court\'s operating hours for this day.</string>
+
+    <!-- Booking: summary -->
+    <string name="booking_summary_title">Booking summary</string>
+    <string name="booking_label_court">Court</string>
+    <string name="booking_label_sport">Sport</string>
+    <string name="booking_label_date">Date</string>
+    <string name="booking_label_time">Time</string>
+    <string name="booking_label_duration">Duration</string>
+    <string name="booking_label_time_zone">Court time zone</string>
+    <string name="booking_label_price_per_hour">Price</string>
+    <string name="booking_estimated_total">Estimated total: %1$s %2$s</string>
+    <string name="booking_estimate_note">Final price is determined when the booking is created.</string>
+    <string name="booking_confirm">Confirm booking</string>
+    <string name="booking_choose_another_time">Choose another time</string>
+    <string name="booking_conflict">This time is no longer available. Please choose another time.</string>
+    <string name="booking_sport_unavailable">This court or sport can no longer be booked.</string>
+    <string name="booking_summary_unavailable">This sport or time can no longer be booked at this court.</string>
+
+    <!-- Booking: detail -->
+    <string name="booking_detail_title">Booking</string>
+    <string name="booking_label_total">Total price</string>
+    <string name="booking_label_booked_at">Booked on (court time)</string>
+    <string name="booking_label_cancelled_at">Cancelled on (court time)</string>
+    <string name="booking_label_reference">Booking reference</string>
+    <string name="booking_total_value">%1$s %2$s</string>
+    <string name="booking_hold_value">Waiting for payment. Pay before %1$s (court time) to keep this booking.</string>
+    <string name="booking_mock_payment_note">This is a mock payment for testing: no money is charged and no card details are needed.</string>
+    <string name="booking_pay">Pay and confirm</string>
+    <string name="booking_payment_confirmed">Payment confirmed. Your booking is confirmed.</string>
+    <string name="booking_cancel">Cancel booking</string>
+    <string name="booking_cancel_title">Cancel this booking?</string>
+    <string name="booking_cancel_message">The court will be released for others to book.</string>
+    <string name="booking_cancel_keep">Keep booking</string>
+    <string name="booking_cancel_confirm">Cancel booking</string>
+    <string name="booking_cancelled_message">Booking cancelled.</string>
+    <string name="booking_not_found">Booking not found</string>
+    <string name="booking_court_unlisted">Court no longer listed</string>
+    <string name="booking_court_loading">Loading…</string>
+    <string name="booking_status_pending">Pending payment</string>
+    <string name="booking_status_confirmed">Confirmed</string>
+    <string name="booking_status_cancelled">Cancelled</string>
+    <string name="booking_status_completed">Completed</string>
+    <string name="booking_status_no_show">No-show</string>
+
+    <!-- My bookings -->
+    <string name="my_bookings_title">My bookings</string>
+    <string name="my_bookings_upcoming">Upcoming</string>
+    <string name="my_bookings_past">Past and cancelled</string>
+    <string name="my_bookings_empty">You have no bookings yet.</string>
+    <string name="booking_when">%1$s, %2$s – %3$s</string>
+    <string name="action_my_bookings">My bookings</string>
+
     <!-- Home -->
     <string name="home_signed_in_as">Signed in as %1$s</string>
     <string name="action_courts">Courts</string>
@@ -114,4 +195,9 @@
     <string name="error_business_rule">This request is not allowed.</string>
     <string name="error_server">Something went wrong on the server. Please try again later.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
+
+    <plurals name="booking_duration_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
 </resources>

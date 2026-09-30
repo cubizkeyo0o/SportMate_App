@@ -3,6 +3,8 @@ package com.sportmate.app.data.remote.mapper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.sportmate.app.data.remote.UtcTimestamps;
+import com.sportmate.app.data.remote.dto.BookingResponseDto;
 import com.sportmate.app.data.remote.dto.DiscoveredCourtResponseDto;
 import com.sportmate.app.data.remote.dto.DiscoveredCourtSportResponseDto;
 import com.sportmate.app.data.remote.dto.DiscoveredOperatingHourResponseDto;
@@ -10,6 +12,8 @@ import com.sportmate.app.data.remote.dto.SportResponseDto;
 import com.sportmate.app.data.remote.dto.SportSummaryResponseDto;
 import com.sportmate.app.data.remote.dto.UserResponseDto;
 import com.sportmate.app.data.remote.dto.UserSportProfileResponseDto;
+import com.sportmate.app.domain.model.Booking;
+import com.sportmate.app.domain.model.BookingStatus;
 import com.sportmate.app.domain.model.Court;
 import com.sportmate.app.domain.model.CourtSport;
 import com.sportmate.app.domain.model.CourtStatus;
@@ -34,6 +38,7 @@ import java.util.regex.Pattern;
 public final class DtoMapper {
     // Court-local wall-clock time as the backend formats it; 24:00 is not a valid value.
     private static final Pattern LOCAL_TIME = Pattern.compile("^([01][0-9]|2[0-3]):[0-5][0-9]$");
+    private static final Pattern LOCAL_DATE = Pattern.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}$");
 
     private DtoMapper() {
     }
@@ -160,7 +165,11 @@ public final class DtoMapper {
             if (dto == null || dto.pricePerHour == null) {
                 throw new IllegalStateException("court sport is incomplete");
             }
-            sports.add(new CourtSport(toSport(dto.sport), dto.pricePerHour, required(dto.currency, "currency")));
+            sports.add(new CourtSport(
+                    required(dto.courtSportId, "court_sport_id"),
+                    toSport(dto.sport),
+                    dto.pricePerHour,
+                    required(dto.currency, "currency")));
         }
         return Collections.unmodifiableList(sports);
     }
@@ -188,6 +197,67 @@ public final class DtoMapper {
             throw new IllegalStateException("unknown day of week");
         }
         return days[dayOfWeek];
+    }
+
+    @NonNull
+    public static List<Booking> toBookings(@NonNull List<BookingResponseDto> dtos) {
+        List<Booking> bookings = new ArrayList<>(dtos.size());
+        for (BookingResponseDto dto : dtos) {
+            bookings.add(toBooking(dto));
+        }
+        return Collections.unmodifiableList(bookings);
+    }
+
+    @NonNull
+    public static Booking toBooking(@Nullable BookingResponseDto dto) {
+        if (dto == null || dto.sport == null || dto.totalPrice == null) {
+            throw new IllegalStateException("booking is incomplete");
+        }
+        String localDate = required(dto.localDate, "local_date");
+        if (!LOCAL_DATE.matcher(localDate).matches()) {
+            throw new IllegalStateException("local_date is not yyyy-MM-dd");
+        }
+        return new Booking(
+                required(dto.id, "id"),
+                required(dto.courtId, "court_id"),
+                required(dto.courtSportId, "court_sport_id"),
+                new Sport(required(dto.sport.id, "sport.id"), required(dto.sport.name, "sport.name"),
+                        required(dto.sport.slug, "sport.slug")),
+                UtcTimestamps.parse(dto.startsAtUtc),
+                UtcTimestamps.parse(dto.endsAtUtc),
+                required(dto.timeZoneId, "time_zone_id"),
+                localDate,
+                localTime(dto.localStartTime, "local_start_time"),
+                localTime(dto.localEndTime, "local_end_time"),
+                toBookingStatus(dto.status),
+                dto.totalPrice,
+                required(dto.currency, "currency"),
+                dto.holdExpiresAtUtc == null ? null : UtcTimestamps.parse(dto.holdExpiresAtUtc),
+                dto.cancellationReason,
+                dto.cancelledAtUtc == null ? null : UtcTimestamps.parse(dto.cancelledAtUtc),
+                UtcTimestamps.parse(dto.createdAtUtc));
+    }
+
+    // BookingStatus values are serialized as snake_case names.
+    @NonNull
+    static BookingStatus toBookingStatus(@Nullable String status) {
+        if (status == null) {
+            return BookingStatus.UNKNOWN;
+        }
+        switch (status) {
+            case "pending":
+                return BookingStatus.PENDING;
+            case "confirmed":
+                return BookingStatus.CONFIRMED;
+            case "cancelled":
+                return BookingStatus.CANCELLED;
+            case "completed":
+                return BookingStatus.COMPLETED;
+            case "no_show":
+                return BookingStatus.NO_SHOW;
+            default:
+                return BookingStatus.UNKNOWN;
+        }
     }
 
     // CourtStatus values are serialized as snake_case names.

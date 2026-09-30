@@ -8,18 +8,14 @@ import com.sportmate.app.domain.model.CourtStatus;
 import com.sportmate.app.domain.model.OperatingHour;
 import com.sportmate.app.domain.model.Weekday;
 
-import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-/** Display helpers for court discovery screens. */
-final class CourtFormats {
+/** Display helpers for court discovery screens (also used by booking for day names). */
+public final class CourtFormats {
     private CourtFormats() {
     }
 
@@ -54,27 +50,8 @@ final class CourtFormats {
         return Collections.unmodifiableList(result);
     }
 
-    /**
-     * The amount with grouping, showing at least the currency's usual decimals (0 for VND, 2 for
-     * USD) and never fewer than the value needs, so the backend amount is shown exactly.
-     */
-    @NonNull
-    static String amount(@NonNull BigDecimal amount, @NonNull String currencyCode, @NonNull Locale locale) {
-        int digits = Math.max(0, amount.stripTrailingZeros().scale());
-        try {
-            digits = Math.max(digits, Currency.getInstance(currencyCode).getDefaultFractionDigits());
-        } catch (IllegalArgumentException unknownCurrency) {
-            // Not a code this device knows; show the value's own decimals.
-        }
-        NumberFormat format = NumberFormat.getNumberInstance(locale);
-        format.setGroupingUsed(true);
-        format.setMinimumFractionDigits(digits);
-        format.setMaximumFractionDigits(digits);
-        return format.format(amount);
-    }
-
     @StringRes
-    static int dayLabel(@NonNull Weekday day) {
+    public static int dayLabel(@NonNull Weekday day) {
         switch (day) {
             case SUNDAY:
                 return R.string.day_sunday;

@@ -29,6 +29,14 @@
         android:text="@string/action_courts" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/my_bookings_button"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:text="@string/action_my_bookings" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/profile_button"
         style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="wrap_content"

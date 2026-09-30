@@ -21,6 +21,8 @@ import com.sportmate.app.domain.model.Court;
 import com.sportmate.app.domain.model.CourtSport;
 import com.sportmate.app.domain.model.OperatingHour;
 import com.sportmate.app.presentation.common.ErrorMessages;
+import com.sportmate.app.presentation.common.MoneyFormats;
+import com.sportmate.app.presentation.booking.BookCourtViewModel;
 import com.sportmate.app.presentation.common.UiState;
 
 import java.util.List;
@@ -54,10 +56,35 @@ public final class CourtDetailFragment extends Fragment {
         binding.retryButton.setOnClickListener(v -> viewModel.retry());
         binding.sportsRetryButton.setOnClickListener(v -> viewModel.retrySports());
         binding.hoursRetryButton.setOnClickListener(v -> viewModel.retryOperatingHours());
+        binding.bookButton.setOnClickListener(v -> openBooking());
 
         viewModel.getCourt().observe(getViewLifecycleOwner(), this::renderCourt);
         viewModel.getSports().observe(getViewLifecycleOwner(), this::renderSports);
         viewModel.getOperatingHours().observe(getViewLifecycleOwner(), this::renderHours);
+        viewModel.getCourt().observe(getViewLifecycleOwner(), state -> renderBooking());
+        viewModel.getSports().observe(getViewLifecycleOwner(), state -> renderBooking());
+        viewModel.getOperatingHours().observe(getViewLifecycleOwner(), state -> renderBooking());
+    }
+
+    private void renderBooking() {
+        BookingEligibility eligibility = BookingEligibility.of(
+                viewModel.getCourt().getValue(), viewModel.getSports().getValue(),
+                viewModel.getOperatingHours().getValue());
+        binding.bookButton.setEnabled(eligibility.canBook);
+        binding.bookUnavailableReason.setVisibility(eligibility.reason == 0 ? View.GONE : View.VISIBLE);
+        if (eligibility.reason != 0) {
+            binding.bookUnavailableReason.setText(eligibility.reason);
+        }
+    }
+
+    private void openBooking() {
+        Court court = viewModel.getCourt().getValue() == null ? null : viewModel.getCourt().getValue().getData();
+        if (court == null) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString(BookCourtViewModel.ARG_COURT_ID, court.getId());
+        NavHostFragment.findNavController(this).navigate(R.id.action_court_detail_to_book_court, args);
     }
 
     private void renderCourt(UiState<Court> state) {
@@ -117,7 +144,7 @@ public final class CourtDetailFragment extends Fragment {
             ItemCourtSportBinding row = ItemCourtSportBinding.inflate(inflater, binding.sportsContainer, false);
             row.sportName.setText(sport.getSport().getName());
             row.sportPrice.setText(getString(R.string.court_sport_price,
-                    CourtFormats.amount(sport.getPricePerHour(), sport.getCurrency(), locale), sport.getCurrency()));
+                    MoneyFormats.amount(sport.getPricePerHour(), sport.getCurrency(), locale), sport.getCurrency()));
             binding.sportsContainer.addView(row.getRoot());
         }
     }

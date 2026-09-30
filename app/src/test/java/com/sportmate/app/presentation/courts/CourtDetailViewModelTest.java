@@ -88,7 +88,7 @@ public class CourtDetailViewModelTest {
         assertEquals(1, repository.courtCalls);
         assertEquals(1, repository.hoursCalls);
         List<CourtSport> sports = Collections.singletonList(
-                new CourtSport(new Sport("s-1", "Badminton", "badminton"), new BigDecimal("150000.00"), "VND"));
+                new CourtSport("cs-1", new Sport("s-1", "Badminton", "badminton"), new BigDecimal("150000.00"), "VND"));
         repository.sportsCallback.onSuccess(sports);
         assertSame(sports, viewModel.getSports().getValue().getData());
     }

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.sportmate.app.presentation.booking.BookCourtViewModel;
+import com.sportmate.app.presentation.booking.BookingDetailViewModel;
+import com.sportmate.app.presentation.booking.BookingSummaryViewModel;
 import com.sportmate.app.presentation.courts.CourtDetailViewModel;
 
 import org.junit.Test;
@@ -66,6 +69,38 @@ public class NavigationGraphTest {
         // Required: no default and not nullable.
         assertFalse(argument.hasAttributeNS(ANDROID, "defaultValue"));
         assertFalse("true".equals(argument.getAttributeNS(APP, "nullable")));
+    }
+
+    @Test
+    public void bookingFlowPassesIdsExplicitly() throws Exception {
+        for (String graph : new String[] {"auth_nav_graph.xml", "nav_graph.xml"}) {
+            for (String id : new String[] {"@+id/bookCourtFragment", "@+id/bookingSummaryFragment",
+                    "@+id/bookingDetailFragment", "@+id/myBookingsFragment"}) {
+                assertFalse(destinationIds(graph).contains(id));
+            }
+        }
+        Document main = parse("main_nav_graph.xml");
+        assertAction(main, "@+id/courtDetailFragment", "@+id/action_court_detail_to_book_court", "@id/bookCourtFragment");
+        assertAction(main, "@+id/bookCourtFragment", "@+id/action_book_court_to_summary", "@id/bookingSummaryFragment");
+        assertAction(main, "@+id/bookingSummaryFragment", "@+id/action_summary_to_booking_detail", "@id/bookingDetailFragment");
+        assertAction(main, "@+id/homeFragment", "@+id/action_home_to_my_bookings", "@id/myBookingsFragment");
+        assertAction(main, "@+id/myBookingsFragment", "@+id/action_my_bookings_to_booking_detail", "@id/bookingDetailFragment");
+
+        assertRequiredStrings(destination(main, "@+id/bookCourtFragment"), BookCourtViewModel.ARG_COURT_ID);
+        assertRequiredStrings(destination(main, "@+id/bookingSummaryFragment"),
+                BookingSummaryViewModel.ARG_COURT_ID, BookingSummaryViewModel.ARG_COURT_SPORT_ID,
+                BookingSummaryViewModel.ARG_DATE, BookingSummaryViewModel.ARG_START_TIME, BookingSummaryViewModel.ARG_END_TIME);
+        assertRequiredStrings(destination(main, "@+id/bookingDetailFragment"), BookingDetailViewModel.ARG_BOOKING_ID);
+    }
+
+    @Test
+    public void createdBookingReplacesTheSummaryOnTheBackStack() throws Exception {
+        Element toDetail = childAction(destination(parse("main_nav_graph.xml"), "@+id/bookingSummaryFragment"),
+                "@+id/action_summary_to_booking_detail");
+
+        // Popping to the court removes Book Court and Summary: Back cannot reach "Confirm booking" again.
+        assertEquals("@id/courtDetailFragment", toDetail.getAttributeNS(APP, "popUpTo"));
+        assertFalse("true".equals(toDetail.getAttributeNS(APP, "popUpToInclusive")));
     }
 
     @Test
@@ -151,6 +186,30 @@ public class NavigationGraphTest {
             }
         }
         throw new AssertionError("no destination " + id);
+    }
+
+    private static void assertAction(Document graph, String from, String action, String to) {
+        assertEquals(to, childAction(destination(graph, from), action).getAttributeNS(APP, "destination"));
+    }
+
+    // Each named argument exists as a required (no default, not nullable) string.
+    private static void assertRequiredStrings(Element destination, String... names) {
+        NodeList children = destination.getElementsByTagName("argument");
+        for (String name : names) {
+            Element found = null;
+            for (int i = 0; i < children.getLength(); i++) {
+                Element argument = (Element) children.item(i);
+                if (name.equals(argument.getAttributeNS(ANDROID, "name"))) {
+                    found = argument;
+                }
+            }
+            if (found == null) {
+                throw new AssertionError("missing argument " + name);
+            }
+            assertEquals("string", found.getAttributeNS(APP, "argType"));
+            assertFalse(found.hasAttributeNS(ANDROID, "defaultValue"));
+            assertFalse("true".equals(found.getAttributeNS(APP, "nullable")));
+        }
     }
 
     private static Element childElement(Element parent, String tag) {

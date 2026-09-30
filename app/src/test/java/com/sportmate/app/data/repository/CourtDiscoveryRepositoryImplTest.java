@@ -140,9 +140,9 @@ public class CourtDiscoveryRepositoryImplTest {
 
     @Test
     public void sportsMapExactPriceAndCurrency() throws Exception {
-        server.enqueue(json("[{\"sport\":{\"id\":\"s-1\",\"name\":\"Badminton\",\"slug\":\"badminton\"},"
+        server.enqueue(json("[{\"court_sport_id\":\"cs-1\",\"sport\":{\"id\":\"s-1\",\"name\":\"Badminton\",\"slug\":\"badminton\"},"
                 + "\"price_per_hour\":150000.00,\"currency\":\"VND\",\"is_active\":true},"
-                + "{\"sport\":{\"id\":\"s-2\",\"name\":\"Tennis\",\"slug\":\"tennis\"},"
+                + "{\"court_sport_id\":\"cs-2\",\"sport\":{\"id\":\"s-2\",\"name\":\"Tennis\",\"slug\":\"tennis\"},"
                 + "\"price_per_hour\":12.75,\"currency\":\"USD\",\"is_active\":true}]"));
 
         BlockingCallback<List<CourtSport>> callback = new BlockingCallback<>();
@@ -153,6 +153,8 @@ public class CourtDiscoveryRepositoryImplTest {
         assertEquals("GET", request.getMethod());
         assertEquals("/api/v1/discovery/courts/" + COURT_ID + "/sports", request.getPath());
         assertEquals(2, sports.size());
+        assertEquals("cs-1", sports.get(0).getId());
+        assertEquals("s-1", sports.get(0).getSport().getId());
         assertEquals("Badminton", sports.get(0).getSport().getName());
         assertEquals("badminton", sports.get(0).getSport().getSlug());
         assertEquals(new BigDecimal("150000.00"), sports.get(0).getPricePerHour());

@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 
 /** Backend {@code DiscoveredCourtSportResponse}: a sport the court offers now, with its hourly price. */
 public final class DiscoveredCourtSportResponseDto {
+    /** The court-sport link id, sent as {@code court_sport_id} when creating a booking. */
+    @SerializedName("court_sport_id")
+    public String courtSportId;
     @SerializedName("sport")
     public SportResponseDto sport;
     /** Decimal, parsed exactly. */

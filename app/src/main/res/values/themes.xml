@@ -32,4 +32,18 @@
     <style name="TextAppearance.SportMate.Value" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textColor">@color/sportmate_text</item>
     </style>
+
+    <!-- Label/value pairs on detail screens -->
+    <style name="Widget.SportMate.FieldLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/spacing_md</item>
+        <item name="android:textAppearance">@style/TextAppearance.SportMate.Label</item>
+    </style>
+
+    <style name="Widget.SportMate.FieldValue" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@style/TextAppearance.SportMate.Value</item>
+    </style>
 </resources>

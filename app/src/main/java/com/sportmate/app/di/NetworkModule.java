@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sportmate.app.BuildConfig;
 import com.sportmate.app.data.remote.api.AuthApi;
+import com.sportmate.app.data.remote.api.BookingApi;
 import com.sportmate.app.data.remote.api.CourtDiscoveryApi;
 import com.sportmate.app.data.remote.api.HealthApi;
 import com.sportmate.app.data.remote.api.SportApi;
@@ -108,5 +109,11 @@ public final class NetworkModule {
     @Singleton
     public static CourtDiscoveryApi provideCourtDiscoveryApi(Retrofit retrofit) {
         return retrofit.create(CourtDiscoveryApi.class);
+    }
+
+    @Provides
+    @Singleton
+    public static BookingApi provideBookingApi(Retrofit retrofit) {
+        return retrofit.create(BookingApi.class);
     }
 }

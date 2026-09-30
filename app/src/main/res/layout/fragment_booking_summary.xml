@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/action_navigate_up"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="@string/booking_summary_title" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/error_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_padding"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.SportMate.Body" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retry_button"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="@string/action_retry" />
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/screen_padding"
+                android:paddingBottom="@dimen/screen_padding">
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_court" />
+
+                <TextView
+                    android:id="@+id/court_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_sport" />
+
+                <TextView
+                    android:id="@+id/sport_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_date" />
+
+                <TextView
+                    android:id="@+id/date_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_time" />
+
+                <TextView
+                    android:id="@+id/time_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_duration" />
+
+                <TextView
+                    android:id="@+id/duration_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_time_zone" />
+
+                <TextView
+                    android:id="@+id/time_zone_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    style="@style/Widget.SportMate.FieldLabel"
+                    android:text="@string/booking_label_price_per_hour" />
+
+                <TextView
+                    android:id="@+id/price_value"
+                    style="@style/Widget.SportMate.FieldValue" />
+
+                <TextView
+                    android:id="@+id/estimate_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:textAppearance="@style/TextAppearance.SportMate.Section" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/booking_estimate_note"
+                    android:textAppearance="@style/TextAppearance.SportMate.Label" />
+
+                <TextView
+                    android:id="@+id/create_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:textAppearance="@style/TextAppearance.SportMate.Body"
+                    android:textColor="?attr/colorError"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/change_time_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/booking_choose_another_time"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/confirm_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/booking_confirm" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/submit_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:indeterminate="true"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+</LinearLayout>
