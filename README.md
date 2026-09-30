@@ -32,14 +32,17 @@ domain/
   model/                 Domain models used by the UI (never DTOs)
   repository/            Repository interfaces
 presentation/
-  common/                UiState, Event, UiText, ErrorMessages
+  common/                UiState, Event, UiText, ErrorMessages, FormState, FormViews, UserInputRules
   session/               SessionManager (app-wide AuthState), SessionViewModel
   splash/ auth/ home/    One package per feature: Fragment + ViewModel
+  profile/               Account details and sport profiles
 ```
 
 Flow: Fragment -> ViewModel (LiveData) -> repository interface -> Retrofit. Fragments and ViewModels never call Retrofit directly.
 
 Authentication: `SessionManager` holds the single `AuthState` (loading, unauthenticated, authenticated, error). At startup it validates a stored access token with `GET /api/v1/users/me`; a 401 clears the tokens. `MainActivity` is the only place that switches between `auth_nav_graph` (Welcome, Login, Register) and `main_nav_graph`, and both switches clear the back stack. Registering does not sign in (the backend returns no tokens), so it leads to Login. Logging out clears local tokens immediately and asks the backend to revoke the refresh token best-effort.
+
+Profile (Home → My profile): shows email, role and account status read-only and edits display name and phone (`GET`/`PUT /api/v1/users/me`; an empty phone clears it). The sport list (`GET /api/v1/users/me/sports`) adds or changes a skill level with `PUT /api/v1/users/me/sports/{sportId}` and removes with `DELETE` on the same path; sports that can be added come from `GET /api/v1/sports` (active sports only). Client-side validation mirrors the backend's rules; the backend stays authoritative.
 
 Tokens are stored in app-private SharedPreferences and excluded from backup and device transfer. Network logging is debug-only at `BASIC` level (request line and status, no headers or bodies); do not raise it to `BODY`, which would log passwords and tokens. Expired access tokens are not refreshed automatically yet.
 

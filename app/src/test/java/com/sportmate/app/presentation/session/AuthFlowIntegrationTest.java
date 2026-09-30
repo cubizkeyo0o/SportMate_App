@@ -4,25 +4,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import com.sportmate.app.data.remote.api.AuthApi;
 import com.sportmate.app.data.remote.api.UserApi;
 import com.sportmate.app.data.repository.AuthRepositoryImpl;
 import com.sportmate.app.domain.common.AppError;
-import com.sportmate.app.presentation.auth.AuthFormState;
 import com.sportmate.app.presentation.auth.LoginViewModel;
+import com.sportmate.app.presentation.common.FormState;
 import com.sportmate.app.testutil.FakeTokenStorage;
+import com.sportmate.app.testutil.LiveDataTestUtil;
 import com.sportmate.app.testutil.TestNetwork;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -88,7 +84,7 @@ public class AuthFlowIntegrationTest {
 
         LoginViewModel viewModel = new LoginViewModel(sessionManager);
         viewModel.login("a@example.com", "wrong-pass1");
-        AuthFormState state = await(viewModel.getState(), s -> !s.isLoading());
+        FormState state = LiveDataTestUtil.await(viewModel.getState(), s -> !s.isLoading());
 
         assertEquals(AppError.Kind.UNAUTHORIZED, state.getError().getKind());
         assertEquals("Invalid email or password.", state.getError().getMessage());
@@ -138,28 +134,6 @@ public class AuthFlowIntegrationTest {
     }
 
     private void awaitStatus(AuthState.Status expected) throws InterruptedException {
-        await(sessionManager.getAuthState(), state -> state.getStatus() == expected);
-    }
-
-    private interface Condition<T> {
-        boolean test(T value);
-    }
-
-    private static <T> T await(LiveData<T> liveData, Condition<T> condition) throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Observer<T> observer = value -> {
-            if (value != null && condition.test(value)) {
-                latch.countDown();
-            }
-        };
-        liveData.observeForever(observer);
-        try {
-            if (!latch.await(5, TimeUnit.SECONDS)) {
-                throw new AssertionError("condition not reached; last value " + liveData.getValue());
-            }
-            return liveData.getValue();
-        } finally {
-            liveData.removeObserver(observer);
-        }
+        LiveDataTestUtil.await(sessionManager.getAuthState(), state -> state.getStatus() == expected);
     }
 }

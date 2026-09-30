@@ -18,11 +18,17 @@ public final class ErrorMessages {
 
     @NonNull
     public static String resolve(@NonNull Context context, @NonNull AppError error) {
+        return toUiText(error).resolve(context);
+    }
+
+    /** The same text as {@link #resolve}, for ViewModels that have no Context. */
+    @NonNull
+    public static UiText toUiText(@NonNull AppError error) {
         String backendMessage = error.getMessage();
         if (usesBackendMessage(error.getKind()) && backendMessage != null && !backendMessage.isEmpty()) {
-            return backendMessage;
+            return UiText.raw(backendMessage);
         }
-        return context.getString(fallbackFor(error.getKind()));
+        return UiText.of(fallbackFor(error.getKind()));
     }
 
     private static boolean usesBackendMessage(AppError.Kind kind) {

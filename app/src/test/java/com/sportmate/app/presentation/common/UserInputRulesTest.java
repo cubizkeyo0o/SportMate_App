@@ -1,4 +1,4 @@
-package com.sportmate.app.presentation.auth;
+package com.sportmate.app.presentation.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -12,21 +12,21 @@ import org.junit.Test;
 import java.util.Map;
 
 /** Mirrors the backend's UserInputRules limits. */
-public class AuthInputRulesTest {
+public class UserInputRulesTest {
     @Test
     public void validRegistrationHasNoErrors() {
-        assertTrue(AuthInputRules.validateRegister("a@example.com", "secret-pass1", "Alex", "+84 (912) 345-678").isEmpty());
-        assertTrue(AuthInputRules.validateRegister("a@example.com", "secret-pass1", "Alex", "").isEmpty());
+        assertTrue(UserInputRules.validateRegister("a@example.com", "secret-pass1", "Alex", "+84 (912) 345-678").isEmpty());
+        assertTrue(UserInputRules.validateRegister("a@example.com", "secret-pass1", "Alex", "").isEmpty());
     }
 
     @Test
     public void emailRules() {
-        assertEquals(UiText.of(R.string.error_email_required), registerError("   ", AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.of(R.string.error_email_invalid), registerError("a@localhost", AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.of(R.string.error_email_invalid), registerError("a b@example.com", AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.of(R.string.error_email_invalid), registerError("a@example.com.", AuthInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_email_required), registerError("   ", UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_email_invalid), registerError("a@localhost", UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_email_invalid), registerError("a b@example.com", UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_email_invalid), registerError("a@example.com.", UserInputRules.FIELD_EMAIL));
         String tooLong = repeat('a', 243) + "@example.com";
-        assertEquals(UiText.of(R.string.error_email_too_long), registerError(tooLong, AuthInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_email_too_long), registerError(tooLong, UserInputRules.FIELD_EMAIL));
     }
 
     @Test
@@ -58,26 +58,36 @@ public class AuthInputRulesTest {
     }
 
     @Test
+    public void profileUsesTheSameDisplayNameAndPhoneRules() {
+        assertTrue(UserInputRules.validateProfile("Alex", "").isEmpty());
+        assertTrue(UserInputRules.validateProfile("Alex", "+84 912 345 678").isEmpty());
+        Map<String, UiText> errors = UserInputRules.validateProfile(" ", "123");
+        assertEquals(UiText.of(R.string.error_display_name_required), errors.get(UserInputRules.FIELD_DISPLAY_NAME));
+        assertEquals(UiText.of(R.string.error_phone_invalid), errors.get(UserInputRules.FIELD_PHONE));
+        assertEquals(2, errors.size());
+    }
+
+    @Test
     public void loginOnlyRequiresPresence() {
-        assertTrue(AuthInputRules.validateLogin("anything", "x").isEmpty());
-        Map<String, UiText> errors = AuthInputRules.validateLogin(null, null);
+        assertTrue(UserInputRules.validateLogin("anything", "x").isEmpty());
+        Map<String, UiText> errors = UserInputRules.validateLogin(null, null);
         assertEquals(2, errors.size());
     }
 
     private static UiText registerError(String email, String field) {
-        return AuthInputRules.validateRegister(email, "secret-pass1", "Alex", null).get(field);
+        return UserInputRules.validateRegister(email, "secret-pass1", "Alex", null).get(field);
     }
 
     private static UiText passwordError(String password) {
-        return AuthInputRules.validateRegister("a@example.com", password, "Alex", null).get(AuthInputRules.FIELD_PASSWORD);
+        return UserInputRules.validateRegister("a@example.com", password, "Alex", null).get(UserInputRules.FIELD_PASSWORD);
     }
 
     private static UiText displayNameError(String displayName) {
-        return AuthInputRules.validateRegister("a@example.com", "secret-pass1", displayName, null).get(AuthInputRules.FIELD_DISPLAY_NAME);
+        return UserInputRules.validateRegister("a@example.com", "secret-pass1", displayName, null).get(UserInputRules.FIELD_DISPLAY_NAME);
     }
 
     private static UiText phoneError(String phone) {
-        return AuthInputRules.validateRegister("a@example.com", "secret-pass1", "Alex", phone).get(AuthInputRules.FIELD_PHONE);
+        return UserInputRules.validateRegister("a@example.com", "secret-pass1", "Alex", phone).get(UserInputRules.FIELD_PHONE);
     }
 
     private static String repeat(char c, int count) {

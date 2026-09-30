@@ -9,6 +9,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.sportmate.app.domain.common.AppError;
 import com.sportmate.app.domain.common.ResultCallback;
 import com.sportmate.app.domain.model.User;
+import com.sportmate.app.domain.model.UserRole;
+import com.sportmate.app.domain.model.UserStatus;
 import com.sportmate.app.testutil.ControllableAuthRepository;
 
 import org.junit.Rule;
@@ -119,6 +121,37 @@ public class SessionManagerTest {
 
         assertEquals(AuthState.Status.UNAUTHENTICATED, status());
         assertEquals(1, repository.logoutCalls);
+    }
+
+    @Test
+    public void currentUserUpdateReplacesDetailsOfTheSameUser() {
+        repository.storedSession = true;
+        sessionManager.restoreIfNeeded();
+        repository.restoreCallback.onSuccess(ControllableAuthRepository.user());
+        User renamed = new User(ControllableAuthRepository.user().getId(), "a@example.com", "Alex Nguyen", null,
+                UserStatus.ACTIVE, UserRole.USER);
+
+        sessionManager.onCurrentUserUpdated(renamed);
+
+        assertEquals(AuthState.Status.AUTHENTICATED, status());
+        assertSame(renamed, sessionManager.getAuthState().getValue().getUser());
+    }
+
+    @Test
+    public void currentUserUpdateNeverSignsInOrSwitchesUser() {
+        sessionManager.restoreIfNeeded();
+        sessionManager.onCurrentUserUpdated(ControllableAuthRepository.user());
+        assertEquals(AuthState.Status.UNAUTHENTICATED, status());
+
+        sessionManager.login("a@example.com", "secret-pass1", new RecordingCallback());
+        repository.loginCallback.onSuccess(ControllableAuthRepository.user());
+        User other = new User("another-id", "b@example.com", "Bo", null, UserStatus.ACTIVE, UserRole.USER);
+        sessionManager.onCurrentUserUpdated(other);
+        assertEquals(ControllableAuthRepository.user().getId(), sessionManager.getAuthState().getValue().getUser().getId());
+
+        sessionManager.logout();
+        sessionManager.onCurrentUserUpdated(ControllableAuthRepository.user());
+        assertEquals(AuthState.Status.UNAUTHENTICATED, status());
     }
 
     private AuthState.Status status() {

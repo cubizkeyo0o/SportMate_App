@@ -14,6 +14,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.sportmate.app.R;
 import com.sportmate.app.databinding.FragmentRegisterBinding;
+import com.sportmate.app.presentation.common.FormState;
+import com.sportmate.app.presentation.common.FormViews;
+import com.sportmate.app.presentation.common.UserInputRules;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -36,10 +39,10 @@ public final class RegisterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
-        AuthForms.onUserEdit(binding.emailInput, () -> viewModel.onFieldEdited(AuthInputRules.FIELD_EMAIL));
-        AuthForms.onUserEdit(binding.passwordInput, () -> viewModel.onFieldEdited(AuthInputRules.FIELD_PASSWORD));
-        AuthForms.onUserEdit(binding.displayNameInput, () -> viewModel.onFieldEdited(AuthInputRules.FIELD_DISPLAY_NAME));
-        AuthForms.onUserEdit(binding.phoneInput, () -> viewModel.onFieldEdited(AuthInputRules.FIELD_PHONE));
+        FormViews.onUserEdit(binding.emailInput, () -> viewModel.onFieldEdited(UserInputRules.FIELD_EMAIL));
+        FormViews.onUserEdit(binding.passwordInput, () -> viewModel.onFieldEdited(UserInputRules.FIELD_PASSWORD));
+        FormViews.onUserEdit(binding.displayNameInput, () -> viewModel.onFieldEdited(UserInputRules.FIELD_DISPLAY_NAME));
+        FormViews.onUserEdit(binding.phoneInput, () -> viewModel.onFieldEdited(UserInputRules.FIELD_PHONE));
         binding.phoneInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 submit();
@@ -63,15 +66,15 @@ public final class RegisterFragment extends Fragment {
     }
 
     private void submit() {
-        AuthForms.hideKeyboard(binding.getRoot());
+        FormViews.hideKeyboard(binding.getRoot());
         viewModel.register(
-                AuthForms.text(binding.emailInput),
-                AuthForms.text(binding.passwordInput),
-                AuthForms.text(binding.displayNameInput),
-                AuthForms.text(binding.phoneInput));
+                FormViews.text(binding.emailInput),
+                FormViews.text(binding.passwordInput),
+                FormViews.text(binding.displayNameInput),
+                FormViews.text(binding.phoneInput));
     }
 
-    private void render(AuthFormState state) {
+    private void render(FormState state) {
         boolean loading = state.isLoading();
         binding.progress.setVisibility(loading ? View.VISIBLE : View.GONE);
         binding.registerButton.setEnabled(!loading);
@@ -80,11 +83,11 @@ public final class RegisterFragment extends Fragment {
         binding.displayNameLayout.setEnabled(!loading);
         binding.phoneLayout.setEnabled(!loading);
 
-        AuthForms.showFieldError(binding.emailLayout, state.getFieldError(AuthInputRules.FIELD_EMAIL));
-        AuthForms.showFieldError(binding.passwordLayout, state.getFieldError(AuthInputRules.FIELD_PASSWORD));
-        AuthForms.showFieldError(binding.displayNameLayout, state.getFieldError(AuthInputRules.FIELD_DISPLAY_NAME));
-        AuthForms.showFieldError(binding.phoneLayout, state.getFieldError(AuthInputRules.FIELD_PHONE));
-        AuthForms.showGeneralError(binding.generalError, state.getError());
+        FormViews.showFieldError(binding.emailLayout, state.getFieldError(UserInputRules.FIELD_EMAIL));
+        FormViews.showFieldError(binding.passwordLayout, state.getFieldError(UserInputRules.FIELD_PASSWORD));
+        FormViews.showFieldError(binding.displayNameLayout, state.getFieldError(UserInputRules.FIELD_DISPLAY_NAME));
+        FormViews.showFieldError(binding.phoneLayout, state.getFieldError(UserInputRules.FIELD_PHONE));
+        FormViews.showGeneralError(binding.generalError, state.getError());
     }
 
     @Override

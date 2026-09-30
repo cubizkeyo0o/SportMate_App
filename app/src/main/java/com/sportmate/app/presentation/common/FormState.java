@@ -1,10 +1,9 @@
-package com.sportmate.app.presentation.auth;
+package com.sportmate.app.presentation.common;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sportmate.app.domain.common.AppError;
-import com.sportmate.app.presentation.common.UiText;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -13,40 +12,40 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * State of a login or register form: whether a submit is in flight, errors per input (keyed like
- * {@link AuthInputRules}) and an error not tied to an input, rendered with ErrorMessages.
+ * State of a form: whether a submit is in flight, errors per input (keyed like
+ * {@link UserInputRules}) and an error not tied to an input, rendered with ErrorMessages.
  */
-public final class AuthFormState {
+public final class FormState {
     private final boolean loading;
     private final Map<String, UiText> fieldErrors;
     @Nullable
     private final AppError error;
 
-    private AuthFormState(boolean loading, Map<String, UiText> fieldErrors, @Nullable AppError error) {
+    private FormState(boolean loading, Map<String, UiText> fieldErrors, @Nullable AppError error) {
         this.loading = loading;
         this.fieldErrors = Collections.unmodifiableMap(new LinkedHashMap<>(fieldErrors));
         this.error = error;
     }
 
-    public static AuthFormState idle() {
-        return new AuthFormState(false, Collections.emptyMap(), null);
+    public static FormState idle() {
+        return new FormState(false, Collections.emptyMap(), null);
     }
 
-    public static AuthFormState loading() {
-        return new AuthFormState(true, Collections.emptyMap(), null);
+    public static FormState loading() {
+        return new FormState(true, Collections.emptyMap(), null);
     }
 
-    public static AuthFormState invalid(@NonNull Map<String, UiText> fieldErrors) {
-        return new AuthFormState(false, fieldErrors, null);
+    public static FormState invalid(@NonNull Map<String, UiText> fieldErrors) {
+        return new FormState(false, fieldErrors, null);
     }
 
     /**
      * Places backend validation messages on the form's inputs. Anything that cannot be shown on an
      * input (another error kind, or a field this form lacks) becomes the general error.
      */
-    public static AuthFormState fromError(@NonNull AppError error, @NonNull Set<String> formFields) {
+    public static FormState fromError(@NonNull AppError error, @NonNull Set<String> formFields) {
         if (error.getKind() != AppError.Kind.VALIDATION || error.getFieldErrors().isEmpty()) {
-            return new AuthFormState(false, Collections.emptyMap(), error);
+            return new FormState(false, Collections.emptyMap(), error);
         }
 
         Map<String, UiText> fieldErrors = new LinkedHashMap<>();
@@ -59,17 +58,17 @@ public final class AuthFormState {
                 unplaced = true;
             }
         }
-        return new AuthFormState(false, fieldErrors, unplaced || fieldErrors.isEmpty() ? error : null);
+        return new FormState(false, fieldErrors, unplaced || fieldErrors.isEmpty() ? error : null);
     }
 
     /** The same state with one input's error removed, e.g. once the user edits that input. */
-    public AuthFormState withoutFieldError(@NonNull String field) {
+    public FormState withoutFieldError(@NonNull String field) {
         if (!fieldErrors.containsKey(field)) {
             return this;
         }
         Map<String, UiText> remaining = new LinkedHashMap<>(fieldErrors);
         remaining.remove(field);
-        return new AuthFormState(loading, remaining, error);
+        return new FormState(loading, remaining, error);
     }
 
     public boolean isLoading() {

@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sportmate.app.data.remote.dto.SportResponseDto;
+import com.sportmate.app.data.remote.dto.SportSummaryResponseDto;
 import com.sportmate.app.data.remote.dto.UserResponseDto;
+import com.sportmate.app.data.remote.dto.UserSportProfileResponseDto;
+import com.sportmate.app.domain.model.SkillLevel;
 import com.sportmate.app.domain.model.Sport;
 import com.sportmate.app.domain.model.User;
+import com.sportmate.app.domain.model.UserSportProfile;
 import com.sportmate.app.domain.model.UserRole;
 import com.sportmate.app.domain.model.UserStatus;
 
@@ -54,6 +58,61 @@ public final class DtoMapper {
                 required(dto.id, "id"),
                 required(dto.name, "name"),
                 required(dto.slug, "slug"));
+    }
+
+    @NonNull
+    public static List<UserSportProfile> toUserSportProfiles(@NonNull List<UserSportProfileResponseDto> dtos) {
+        List<UserSportProfile> profiles = new ArrayList<>(dtos.size());
+        for (UserSportProfileResponseDto dto : dtos) {
+            profiles.add(toUserSportProfile(dto));
+        }
+        return Collections.unmodifiableList(profiles);
+    }
+
+    @NonNull
+    public static UserSportProfile toUserSportProfile(@Nullable UserSportProfileResponseDto dto) {
+        if (dto == null) {
+            throw new IllegalStateException("sport profile is missing");
+        }
+        SportSummaryResponseDto sport = dto.sport;
+        if (sport == null || sport.isActive == null) {
+            throw new IllegalStateException("sport is missing");
+        }
+        return new UserSportProfile(
+                new Sport(required(sport.id, "sport.id"), required(sport.name, "sport.name"), required(sport.slug, "sport.slug")),
+                sport.isActive,
+                toSkillLevel(dto.skillLevel));
+    }
+
+    /** SkillLevel values are serialized as snake_case names; they are stable on the backend. */
+    @NonNull
+    public static SkillLevel toSkillLevel(@Nullable String value) {
+        if (value != null) {
+            for (SkillLevel level : SkillLevel.values()) {
+                if (toApiValue(level).equals(value)) {
+                    return level;
+                }
+            }
+        }
+        throw new IllegalStateException("unknown skill level");
+    }
+
+    @NonNull
+    public static String toApiValue(@NonNull SkillLevel level) {
+        switch (level) {
+            case BEGINNER:
+                return "beginner";
+            case ELEMENTARY:
+                return "elementary";
+            case INTERMEDIATE:
+                return "intermediate";
+            case ADVANCED:
+                return "advanced";
+            case EXPERT:
+                return "expert";
+            default:
+                throw new IllegalArgumentException("unmapped skill level");
+        }
     }
 
     // Role names are the backend's UserRole member names.

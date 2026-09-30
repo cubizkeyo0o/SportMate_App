@@ -21,6 +21,13 @@
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.SportMate.Body" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:text="@string/action_profile" />
+
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
         android:layout_width="wrap_content"

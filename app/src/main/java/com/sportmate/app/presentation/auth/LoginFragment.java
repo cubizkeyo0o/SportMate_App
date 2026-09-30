@@ -12,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.sportmate.app.databinding.FragmentLoginBinding;
+import com.sportmate.app.presentation.common.FormState;
+import com.sportmate.app.presentation.common.FormViews;
+import com.sportmate.app.presentation.common.UserInputRules;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -48,8 +51,8 @@ public final class LoginFragment extends Fragment {
             binding.passwordInput.requestFocus();
         }
 
-        AuthForms.onUserEdit(binding.emailInput, () -> viewModel.onFieldEdited(AuthInputRules.FIELD_EMAIL));
-        AuthForms.onUserEdit(binding.passwordInput, () -> viewModel.onFieldEdited(AuthInputRules.FIELD_PASSWORD));
+        FormViews.onUserEdit(binding.emailInput, () -> viewModel.onFieldEdited(UserInputRules.FIELD_EMAIL));
+        FormViews.onUserEdit(binding.passwordInput, () -> viewModel.onFieldEdited(UserInputRules.FIELD_PASSWORD));
         binding.passwordInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 submit();
@@ -63,20 +66,20 @@ public final class LoginFragment extends Fragment {
     }
 
     private void submit() {
-        AuthForms.hideKeyboard(binding.getRoot());
-        viewModel.login(AuthForms.text(binding.emailInput), AuthForms.text(binding.passwordInput));
+        FormViews.hideKeyboard(binding.getRoot());
+        viewModel.login(FormViews.text(binding.emailInput), FormViews.text(binding.passwordInput));
     }
 
-    private void render(AuthFormState state) {
+    private void render(FormState state) {
         boolean loading = state.isLoading();
         binding.progress.setVisibility(loading ? View.VISIBLE : View.GONE);
         binding.loginButton.setEnabled(!loading);
         binding.emailLayout.setEnabled(!loading);
         binding.passwordLayout.setEnabled(!loading);
 
-        AuthForms.showFieldError(binding.emailLayout, state.getFieldError(AuthInputRules.FIELD_EMAIL));
-        AuthForms.showFieldError(binding.passwordLayout, state.getFieldError(AuthInputRules.FIELD_PASSWORD));
-        AuthForms.showGeneralError(binding.generalError, state.getError());
+        FormViews.showFieldError(binding.emailLayout, state.getFieldError(UserInputRules.FIELD_EMAIL));
+        FormViews.showFieldError(binding.passwordLayout, state.getFieldError(UserInputRules.FIELD_PASSWORD));
+        FormViews.showGeneralError(binding.generalError, state.getError());
     }
 
     @Override

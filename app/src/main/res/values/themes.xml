@@ -20,4 +20,16 @@
     <style name="TextAppearance.SportMate.Body" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textColor">@color/sportmate_text_secondary</item>
     </style>
+
+    <style name="TextAppearance.SportMate.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/sportmate_green</item>
+    </style>
+
+    <style name="TextAppearance.SportMate.Label" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">@color/sportmate_text_secondary</item>
+    </style>
+
+    <style name="TextAppearance.SportMate.Value" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/sportmate_text</item>
+    </style>
 </resources>

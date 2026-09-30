@@ -6,10 +6,12 @@ import com.sportmate.app.data.repository.AuthRepositoryImpl;
 import com.sportmate.app.data.repository.HealthRepositoryImpl;
 import com.sportmate.app.data.repository.SportRepositoryImpl;
 import com.sportmate.app.data.repository.UserRepositoryImpl;
+import com.sportmate.app.data.repository.UserSportProfileRepositoryImpl;
 import com.sportmate.app.domain.repository.AuthRepository;
 import com.sportmate.app.domain.repository.HealthRepository;
 import com.sportmate.app.domain.repository.SportRepository;
 import com.sportmate.app.domain.repository.UserRepository;
+import com.sportmate.app.domain.repository.UserSportProfileRepository;
 
 import dagger.Binds;
 import dagger.Module;
@@ -34,4 +36,7 @@ public abstract class DataModule {
 
     @Binds
     abstract SportRepository bindSportRepository(SportRepositoryImpl impl);
+
+    @Binds
+    abstract UserSportProfileRepository bindUserSportProfileRepository(UserSportProfileRepositoryImpl impl);
 }

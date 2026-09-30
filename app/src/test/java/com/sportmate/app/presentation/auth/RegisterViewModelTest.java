@@ -11,7 +11,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.sportmate.app.R;
 import com.sportmate.app.domain.common.AppError;
 import com.sportmate.app.presentation.common.Event;
+import com.sportmate.app.presentation.common.FormState;
 import com.sportmate.app.presentation.common.UiText;
+import com.sportmate.app.presentation.common.UserInputRules;
 import com.sportmate.app.testutil.ControllableAuthRepository;
 
 import org.junit.Rule;
@@ -30,11 +32,11 @@ public class RegisterViewModelTest {
     public void invalidInputIsRejectedWithoutCallingBackend() {
         viewModel.register("not-an-email", "short", " ", "12");
 
-        AuthFormState state = state();
-        assertEquals(UiText.of(R.string.error_email_invalid), state.getFieldError(AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.of(R.string.error_password_length), state.getFieldError(AuthInputRules.FIELD_PASSWORD));
-        assertEquals(UiText.of(R.string.error_display_name_required), state.getFieldError(AuthInputRules.FIELD_DISPLAY_NAME));
-        assertEquals(UiText.of(R.string.error_phone_invalid), state.getFieldError(AuthInputRules.FIELD_PHONE));
+        FormState state = state();
+        assertEquals(UiText.of(R.string.error_email_invalid), state.getFieldError(UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_password_length), state.getFieldError(UserInputRules.FIELD_PASSWORD));
+        assertEquals(UiText.of(R.string.error_display_name_required), state.getFieldError(UserInputRules.FIELD_DISPLAY_NAME));
+        assertEquals(UiText.of(R.string.error_phone_invalid), state.getFieldError(UserInputRules.FIELD_PHONE));
         assertEquals(0, repository.registerCalls);
     }
 
@@ -70,7 +72,7 @@ public class RegisterViewModelTest {
         repository.registerCallback.onError(new AppError(AppError.Kind.VALIDATION, 400, "One or more validation errors occurred.",
                 Collections.singletonMap("phone", Collections.singletonList("Phone must contain 7-15 digits."))));
 
-        assertEquals(UiText.raw("Phone must contain 7-15 digits."), state().getFieldError(AuthInputRules.FIELD_PHONE));
+        assertEquals(UiText.raw("Phone must contain 7-15 digits."), state().getFieldError(UserInputRules.FIELD_PHONE));
         assertNull(state().getError());
         assertNull(viewModel.getRegistered().getValue());
     }
@@ -92,7 +94,7 @@ public class RegisterViewModelTest {
 
         repository.registerCallback.onError(new AppError(AppError.Kind.CONFLICT, 409, "An account with this email already exists.", null));
 
-        assertEquals(UiText.raw("An account with this email already exists."), state().getFieldError(AuthInputRules.FIELD_EMAIL));
+        assertEquals(UiText.raw("An account with this email already exists."), state().getFieldError(UserInputRules.FIELD_EMAIL));
         assertNull(state().getError());
         assertFalse(state().isLoading());
     }
@@ -110,7 +112,7 @@ public class RegisterViewModelTest {
         assertNull(viewModel.getRegistered().getValue());
     }
 
-    private AuthFormState state() {
+    private FormState state() {
         return viewModel.getState().getValue();
     }
 }

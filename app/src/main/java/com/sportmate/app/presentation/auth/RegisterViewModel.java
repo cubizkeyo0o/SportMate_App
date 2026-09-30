@@ -11,7 +11,9 @@ import com.sportmate.app.domain.common.ResultCallback;
 import com.sportmate.app.domain.model.User;
 import com.sportmate.app.domain.repository.AuthRepository;
 import com.sportmate.app.presentation.common.Event;
+import com.sportmate.app.presentation.common.FormState;
 import com.sportmate.app.presentation.common.UiText;
+import com.sportmate.app.presentation.common.UserInputRules;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,13 +33,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public final class RegisterViewModel extends ViewModel {
     static final Set<String> FIELDS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            AuthInputRules.FIELD_EMAIL,
-            AuthInputRules.FIELD_PASSWORD,
-            AuthInputRules.FIELD_DISPLAY_NAME,
-            AuthInputRules.FIELD_PHONE)));
+            UserInputRules.FIELD_EMAIL,
+            UserInputRules.FIELD_PASSWORD,
+            UserInputRules.FIELD_DISPLAY_NAME,
+            UserInputRules.FIELD_PHONE)));
 
     private final AuthRepository authRepository;
-    private final MutableLiveData<AuthFormState> state = new MutableLiveData<>(AuthFormState.idle());
+    private final MutableLiveData<FormState> state = new MutableLiveData<>(FormState.idle());
     private final MutableLiveData<Event<String>> registered = new MutableLiveData<>();
     private Cancellable pending;
 
@@ -46,7 +48,7 @@ public final class RegisterViewModel extends ViewModel {
         this.authRepository = authRepository;
     }
 
-    public LiveData<AuthFormState> getState() {
+    public LiveData<FormState> getState() {
         return state;
     }
 
@@ -59,23 +61,23 @@ public final class RegisterViewModel extends ViewModel {
         if (current().isLoading()) {
             return;
         }
-        Map<String, UiText> errors = AuthInputRules.validateRegister(email, password, displayName, phone);
+        Map<String, UiText> errors = UserInputRules.validateRegister(email, password, displayName, phone);
         if (!errors.isEmpty()) {
-            state.setValue(AuthFormState.invalid(errors));
+            state.setValue(FormState.invalid(errors));
             return;
         }
 
-        String normalizedEmail = AuthInputRules.normalizeEmail(email);
-        state.setValue(AuthFormState.loading());
+        String normalizedEmail = UserInputRules.normalizeEmail(email);
+        state.setValue(FormState.loading());
         pending = authRepository.register(
                 normalizedEmail,
                 password,
                 displayName.trim(),
-                AuthInputRules.normalizePhone(phone),
+                UserInputRules.normalizePhone(phone),
                 new ResultCallback<User>() {
                     @Override
                     public void onSuccess(User user) {
-                        state.setValue(AuthFormState.idle());
+                        state.setValue(FormState.idle());
                         registered.setValue(new Event<>(normalizedEmail));
                     }
 
@@ -87,7 +89,7 @@ public final class RegisterViewModel extends ViewModel {
     }
 
     public void onFieldEdited(String field) {
-        AuthFormState current = current();
+        FormState current = current();
         if (!current.isLoading()) {
             state.setValue(current.withoutFieldError(field));
         }
@@ -101,16 +103,16 @@ public final class RegisterViewModel extends ViewModel {
     }
 
     // Registration's only 409 is a duplicate email, so it is shown on the email input.
-    private static AuthFormState toFormState(AppError error) {
+    private static FormState toFormState(AppError error) {
         String message = error.getMessage();
         if (error.getKind() == AppError.Kind.CONFLICT && message != null && !message.isEmpty()) {
-            return AuthFormState.invalid(Collections.singletonMap(AuthInputRules.FIELD_EMAIL, UiText.raw(message)));
+            return FormState.invalid(Collections.singletonMap(UserInputRules.FIELD_EMAIL, UiText.raw(message)));
         }
-        return AuthFormState.fromError(error, FIELDS);
+        return FormState.fromError(error, FIELDS);
     }
 
-    private AuthFormState current() {
-        AuthFormState value = state.getValue();
-        return value == null ? AuthFormState.idle() : value;
+    private FormState current() {
+        FormState value = state.getValue();
+        return value == null ? FormState.idle() : value;
     }
 }

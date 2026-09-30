@@ -1,9 +1,8 @@
-package com.sportmate.app.presentation.auth;
+package com.sportmate.app.presentation.common;
 
 import androidx.annotation.Nullable;
 
 import com.sportmate.app.R;
-import com.sportmate.app.presentation.common.UiText;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.regex.Pattern;
  * backend stays authoritative. The limits also appear in the error strings; keep them in sync. Field keys are the backend's snake_case request field names, so
  * client and backend validation errors land on the same inputs.
  */
-public final class AuthInputRules {
+public final class UserInputRules {
     public static final String FIELD_EMAIL = "email";
     public static final String FIELD_PASSWORD = "password";
     public static final String FIELD_DISPLAY_NAME = "display_name";
@@ -31,7 +30,7 @@ public final class AuthInputRules {
     // Deliberately loose: catches obvious typos; the backend does the full check.
     private static final Pattern EMAIL = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
 
-    private AuthInputRules() {
+    private UserInputRules() {
     }
 
     public static String normalizeEmail(@Nullable String email) {
@@ -64,6 +63,14 @@ public final class AuthInputRules {
         Map<String, UiText> errors = new LinkedHashMap<>();
         putIfInvalid(errors, FIELD_EMAIL, email(email));
         putIfInvalid(errors, FIELD_PASSWORD, newPassword(password));
+        putIfInvalid(errors, FIELD_DISPLAY_NAME, displayName(displayName));
+        putIfInvalid(errors, FIELD_PHONE, phone(phone));
+        return errors;
+    }
+
+    /** Editable profile fields (PUT users/me); the backend applies the same rules as registration. */
+    public static Map<String, UiText> validateProfile(@Nullable String displayName, @Nullable String phone) {
+        Map<String, UiText> errors = new LinkedHashMap<>();
         putIfInvalid(errors, FIELD_DISPLAY_NAME, displayName(displayName));
         putIfInvalid(errors, FIELD_PHONE, phone(phone));
         return errors;

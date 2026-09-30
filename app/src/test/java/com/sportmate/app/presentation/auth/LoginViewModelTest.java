@@ -10,7 +10,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.sportmate.app.R;
 import com.sportmate.app.domain.common.AppError;
+import com.sportmate.app.presentation.common.FormState;
 import com.sportmate.app.presentation.common.UiText;
+import com.sportmate.app.presentation.common.UserInputRules;
 import com.sportmate.app.presentation.session.AuthState;
 import com.sportmate.app.presentation.session.SessionManager;
 import com.sportmate.app.testutil.ControllableAuthRepository;
@@ -43,10 +45,10 @@ public class LoginViewModelTest {
     public void invalidInputIsRejectedWithoutCallingBackend() {
         viewModel.login("  ", "");
 
-        AuthFormState state = state();
+        FormState state = state();
         assertFalse(state.isLoading());
-        assertEquals(UiText.of(R.string.error_email_required), state.getFieldError(AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.of(R.string.error_password_required), state.getFieldError(AuthInputRules.FIELD_PASSWORD));
+        assertEquals(UiText.of(R.string.error_email_required), state.getFieldError(UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_password_required), state.getFieldError(UserInputRules.FIELD_PASSWORD));
         assertEquals(0, repository.loginCalls);
     }
 
@@ -95,8 +97,8 @@ public class LoginViewModelTest {
 
         repository.loginCallback.onError(new AppError(AppError.Kind.VALIDATION, 400, "One or more validation errors occurred.", fieldErrors));
 
-        assertEquals(UiText.raw("Email is required."), state().getFieldError(AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.raw("First.\nSecond."), state().getFieldError(AuthInputRules.FIELD_PASSWORD));
+        assertEquals(UiText.raw("Email is required."), state().getFieldError(UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.raw("First.\nSecond."), state().getFieldError(UserInputRules.FIELD_PASSWORD));
         assertNull(state().getError());
     }
 
@@ -117,10 +119,10 @@ public class LoginViewModelTest {
     public void editingAFieldClearsOnlyItsError() {
         viewModel.login("", "");
 
-        viewModel.onFieldEdited(AuthInputRules.FIELD_EMAIL);
+        viewModel.onFieldEdited(UserInputRules.FIELD_EMAIL);
 
-        assertNull(state().getFieldError(AuthInputRules.FIELD_EMAIL));
-        assertEquals(UiText.of(R.string.error_password_required), state().getFieldError(AuthInputRules.FIELD_PASSWORD));
+        assertNull(state().getFieldError(UserInputRules.FIELD_EMAIL));
+        assertEquals(UiText.of(R.string.error_password_required), state().getFieldError(UserInputRules.FIELD_PASSWORD));
     }
 
     @Test
@@ -132,7 +134,7 @@ public class LoginViewModelTest {
         assertEquals(1, repository.cancelled);
     }
 
-    private AuthFormState state() {
+    private FormState state() {
         return viewModel.getState().getValue();
     }
 }

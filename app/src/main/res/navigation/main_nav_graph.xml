@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Main flow after sign-in. Courts, sports, bookings and profile destinations (and the bottom
-    navigation for them) are added here as those features are built.
+    Main flow after sign-in; reachable only through MainActivity once the session is authenticated.
+    Courts, bookings and play request destinations are added here as those features are built.
 -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,5 +11,14 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.sportmate.app.presentation.home.HomeFragment"
-        android:label="@string/app_name" />
+        android:label="@string/app_name">
+        <action
+            android:id="@+id/action_home_to_profile"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.sportmate.app.presentation.profile.ProfileFragment"
+        android:label="@string/profile_title" />
 </navigation>

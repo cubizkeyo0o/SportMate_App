@@ -62,6 +62,19 @@ public final class SessionManager {
         });
     }
 
+    /**
+     * Replaces the signed-in user's details after the backend returned them updated (e.g. a profile
+     * save). Ignored unless authenticated as the same user, so it can never sign anyone in.
+     */
+    public void onCurrentUserUpdated(@NonNull User user) {
+        AuthState state = authState.getValue();
+        User current = state == null ? null : state.getUser();
+        if (state != null && state.getStatus() == AuthState.Status.AUTHENTICATED
+                && current != null && current.getId().equals(user.getId())) {
+            authState.setValue(AuthState.authenticated(user));
+        }
+    }
+
     /** Signs out locally at once; the backend revocation is best-effort. */
     public void logout() {
         authRepository.logout(new ResultCallback<Void>() {

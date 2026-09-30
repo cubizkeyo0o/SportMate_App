@@ -9,7 +9,9 @@ import com.sportmate.app.domain.common.AppError;
 import com.sportmate.app.domain.common.Cancellable;
 import com.sportmate.app.domain.common.ResultCallback;
 import com.sportmate.app.domain.model.User;
+import com.sportmate.app.presentation.common.FormState;
 import com.sportmate.app.presentation.common.UiText;
+import com.sportmate.app.presentation.common.UserInputRules;
 import com.sportmate.app.presentation.session.SessionManager;
 
 import java.util.Arrays;
@@ -29,11 +31,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public final class LoginViewModel extends ViewModel {
     static final Set<String> FIELDS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            AuthInputRules.FIELD_EMAIL,
-            AuthInputRules.FIELD_PASSWORD)));
+            UserInputRules.FIELD_EMAIL,
+            UserInputRules.FIELD_PASSWORD)));
 
     private final SessionManager sessionManager;
-    private final MutableLiveData<AuthFormState> state = new MutableLiveData<>(AuthFormState.idle());
+    private final MutableLiveData<FormState> state = new MutableLiveData<>(FormState.idle());
     private Cancellable pending;
 
     @Inject
@@ -41,7 +43,7 @@ public final class LoginViewModel extends ViewModel {
         this.sessionManager = sessionManager;
     }
 
-    public LiveData<AuthFormState> getState() {
+    public LiveData<FormState> getState() {
         return state;
     }
 
@@ -49,28 +51,28 @@ public final class LoginViewModel extends ViewModel {
         if (current().isLoading()) {
             return;
         }
-        Map<String, UiText> errors = AuthInputRules.validateLogin(email, password);
+        Map<String, UiText> errors = UserInputRules.validateLogin(email, password);
         if (!errors.isEmpty()) {
-            state.setValue(AuthFormState.invalid(errors));
+            state.setValue(FormState.invalid(errors));
             return;
         }
 
-        state.setValue(AuthFormState.loading());
-        pending = sessionManager.login(AuthInputRules.normalizeEmail(email), password, new ResultCallback<User>() {
+        state.setValue(FormState.loading());
+        pending = sessionManager.login(UserInputRules.normalizeEmail(email), password, new ResultCallback<User>() {
             @Override
             public void onSuccess(User user) {
-                state.setValue(AuthFormState.idle());
+                state.setValue(FormState.idle());
             }
 
             @Override
             public void onError(@NonNull AppError error) {
-                state.setValue(AuthFormState.fromError(error, FIELDS));
+                state.setValue(FormState.fromError(error, FIELDS));
             }
         });
     }
 
     public void onFieldEdited(String field) {
-        AuthFormState current = current();
+        FormState current = current();
         if (!current.isLoading()) {
             state.setValue(current.withoutFieldError(field));
         }
@@ -83,8 +85,8 @@ public final class LoginViewModel extends ViewModel {
         }
     }
 
-    private AuthFormState current() {
-        AuthFormState value = state.getValue();
-        return value == null ? AuthFormState.idle() : value;
+    private FormState current() {
+        FormState value = state.getValue();
+        return value == null ? FormState.idle() : value;
     }
 }

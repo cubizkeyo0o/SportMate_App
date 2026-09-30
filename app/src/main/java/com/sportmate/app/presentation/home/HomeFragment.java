@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.sportmate.app.R;
 import com.sportmate.app.databinding.FragmentHomeBinding;
@@ -39,6 +40,9 @@ public final class HomeFragment extends Fragment {
         HomeViewModel viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding.retryButton.setOnClickListener(v -> viewModel.checkBackend());
         viewModel.getBackendStatus().observe(getViewLifecycleOwner(), this::render);
+
+        binding.profileButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.action_home_to_profile));
 
         // Logging out makes MainActivity return to the auth flow.
         SessionViewModel sessionViewModel = new ViewModelProvider(requireActivity()).get(SessionViewModel.class);

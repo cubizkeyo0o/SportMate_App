@@ -1,7 +1,10 @@
 package com.sportmate.app.data.repository;
 
+import androidx.annotation.Nullable;
+
 import com.sportmate.app.data.remote.ApiCallExecutor;
 import com.sportmate.app.data.remote.api.UserApi;
+import com.sportmate.app.data.remote.dto.UpdateProfileRequestDto;
 import com.sportmate.app.data.remote.mapper.DtoMapper;
 import com.sportmate.app.domain.common.Cancellable;
 import com.sportmate.app.domain.common.ResultCallback;
@@ -25,5 +28,13 @@ public final class UserRepositoryImpl implements UserRepository {
     @Override
     public Cancellable getCurrentUser(ResultCallback<User> callback) {
         return executor.execute(userApi.getMe(), DtoMapper::toUser, callback);
+    }
+
+    @Override
+    public Cancellable updateProfile(String displayName, @Nullable String phone, ResultCallback<User> callback) {
+        return executor.execute(
+                userApi.updateMe(new UpdateProfileRequestDto(displayName, phone)),
+                DtoMapper::toUser,
+                callback);
     }
 }
