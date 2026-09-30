@@ -1,8 +1,23 @@
 <resources>
-    <style name="Theme.SportMate" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#287653</item>
-        <item name="colorSecondary">#E7A93B</item>
-        <item name="android:statusBarColor">#F4F7F4</item>
+    <!-- Light only until a dark palette is designed. -->
+    <style name="Theme.SportMate" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/sportmate_green</item>
+        <item name="colorOnPrimary">@color/sportmate_on_primary</item>
+        <item name="colorSecondary">@color/sportmate_amber</item>
+        <item name="colorError">@color/sportmate_error</item>
+        <item name="colorSurface">@color/sportmate_surface</item>
+        <item name="colorOnSurface">@color/sportmate_text</item>
+        <item name="android:colorBackground">@color/sportmate_background</item>
+        <item name="android:windowBackground">@color/sportmate_background</item>
         <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="TextAppearance.SportMate.Title" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textColor">@color/sportmate_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.SportMate.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/sportmate_text_secondary</item>
     </style>
 </resources>

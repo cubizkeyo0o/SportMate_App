@@ -3,8 +3,8 @@
     android:id="@+id/item_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="48dp"
+    android:minHeight="@dimen/list_item_min_height"
     android:gravity="center_vertical"
-    android:paddingHorizontal="16dp"
+    android:paddingHorizontal="@dimen/spacing_md"
     android:textColor="@color/sportmate_text"
     android:textSize="16sp" />

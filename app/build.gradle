@@ -3,40 +3,46 @@ plugins {
     id 'com.google.dagger.hilt.android'
 }
 
-def apiBaseUrl = providers.gradleProperty('sportmateApiBaseUrl').getOrElse('http://localhost:5000/')
+// Development API URL. Override per machine with -PsportmateApiBaseUrl=... or in ~/.gradle/gradle.properties
+// (never commit a personal address). Retrofit requires the trailing slash.
+def apiBaseUrl = providers.gradleProperty('sportmateApiBaseUrl').getOrElse('http://localhost:5000/').trim()
+if (!apiBaseUrl.endsWith('/')) {
+    apiBaseUrl += '/'
+}
 
 android {
-    namespace 'com.sportmate.app'
-    compileSdk 36
+    namespace = 'com.sportmate.app'
+    compileSdk = 36
 
     defaultConfig {
-        applicationId 'com.sportmate.app'
-        minSdk 23
-        targetSdk 36
-        versionCode 1
-        versionName '1.0'
+        applicationId = 'com.sportmate.app'
+        minSdk = 23
+        targetSdk = 36
+        versionCode = 1
+        versionName = '1.0'
         buildConfigField 'String', 'API_BASE_URL', '"' + apiBaseUrl.replace('\\', '\\\\').replace('"', '\\"') + '"'
         manifestPlaceholders = [usesCleartextTraffic: 'true']
     }
 
     buildTypes {
         debug {
-            applicationIdSuffix '.debug'
+            applicationIdSuffix = '.debug'
         }
         release {
             manifestPlaceholders = [usesCleartextTraffic: 'false']
             buildConfigField 'String', 'API_BASE_URL', '"https://api.example.invalid/"'
-            minifyEnabled false
+            minifyEnabled = false
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
-        buildConfig true
+        buildConfig = true
+        viewBinding = true
     }
 }
 
@@ -57,4 +63,8 @@ dependencies {
 
     implementation 'com.google.dagger:hilt-android:2.57.2'
     annotationProcessor 'com.google.dagger:hilt-compiler:2.57.2'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 }

@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">SportMate</string>
+
+    <!-- Common -->
+    <string name="action_retry">Retry</string>
+
+    <!-- Auth -->
+    <string name="welcome_coming_soon">Sign in and registration are coming soon.</string>
+
+    <!-- Home -->
+    <string name="home_backend_checking">Checking backend connection…</string>
+    <string name="home_backend_ok">Backend connected.</string>
+    <string name="home_backend_unhealthy">Backend responded but is not healthy.</string>
+
+    <!-- Generic errors, used when the backend sends no client-facing message -->
+    <string name="error_network">Cannot reach the server. Check your connection and try again.</string>
+    <string name="error_validation">Some of the information is invalid.</string>
+    <string name="error_unauthorized">Please sign in again.</string>
+    <string name="error_forbidden">You do not have permission to do this.</string>
+    <string name="error_not_found">The requested item was not found.</string>
+    <string name="error_conflict">This conflicts with existing data.</string>
+    <string name="error_business_rule">This request is not allowed.</string>
+    <string name="error_server">Something went wrong on the server. Please try again later.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
 </resources>

@@ -1,4 +1,13 @@
 <resources>
+    <!-- Brand -->
+    <color name="sportmate_green">#287653</color>
+    <color name="sportmate_amber">#E7A93B</color>
+
+    <!-- Neutrals -->
     <color name="sportmate_background">#F4F7F4</color>
+    <color name="sportmate_surface">#FFFFFF</color>
     <color name="sportmate_text">#18352B</color>
+    <color name="sportmate_text_secondary">#4F665C</color>
+    <color name="sportmate_on_primary">#FFFFFF</color>
+    <color name="sportmate_error">#B3261E</color>
 </resources>

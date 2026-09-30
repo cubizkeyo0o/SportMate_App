@@ -11,18 +11,60 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.sportmate.app.R;
+import com.sportmate.app.databinding.FragmentHomeBinding;
+import com.sportmate.app.domain.common.AppError;
+import com.sportmate.app.presentation.common.ErrorMessages;
+import com.sportmate.app.presentation.common.UiState;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public final class HomeFragment extends Fragment {
+    private FragmentHomeBinding binding;
+
     @Nullable
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         HomeViewModel viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        viewModel.getTitle().observe(getViewLifecycleOwner(), title ->
-            ((android.widget.TextView) view.findViewById(R.id.title)).setText(title));
-        return view;
+        binding.retryButton.setOnClickListener(v -> viewModel.checkBackend());
+        viewModel.getBackendStatus().observe(getViewLifecycleOwner(), this::render);
+    }
+
+    private void render(UiState<Boolean> state) {
+        boolean loading = state.getStatus() == UiState.Status.LOADING;
+        binding.progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        binding.retryButton.setVisibility(state.getStatus() == UiState.Status.ERROR ? View.VISIBLE : View.GONE);
+
+        switch (state.getStatus()) {
+            case LOADING:
+                binding.backendStatus.setText(R.string.home_backend_checking);
+                break;
+            case SUCCESS:
+                binding.backendStatus.setText(Boolean.TRUE.equals(state.getData())
+                        ? R.string.home_backend_ok
+                        : R.string.home_backend_unhealthy);
+                break;
+            case ERROR:
+                AppError error = state.getError();
+                binding.backendStatus.setText(error == null
+                        ? getString(R.string.error_unknown)
+                        : ErrorMessages.resolve(requireContext(), error));
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

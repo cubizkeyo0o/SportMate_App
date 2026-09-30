@@ -1,6 +1,6 @@
 # SportMate Android App
 
-Native Android starter using Java, XML Views, MVVM, LiveData, Navigation Component, RecyclerView, Hilt, Retrofit, and OkHttp. The only initial screen displays SportMate. No Kotlin or Compose is used.
+Native Android app using Java, XML Views, MVVM, LiveData, Navigation Component, RecyclerView, Hilt, Retrofit, and OkHttp. No Kotlin or Compose is used.
 
 ## Requirements
 
@@ -11,6 +11,35 @@ Native Android starter using Java, XML Views, MVVM, LiveData, Navigation Compone
 
 Android Studio is not required for daily development; install the SDK command-line tools and accept SDK licenses with `sdkmanager --licenses`.
 
+## Architecture
+
+Package `com.sportmate.app`:
+
+```text
+di/                      Hilt modules: NetworkModule (Gson, OkHttp, Retrofit, APIs), DataModule (bindings)
+data/
+  local/                 TokenStorage + SharedPreferences implementation
+  remote/
+    api/                 Retrofit interfaces, one per backend resource
+    dto/                 Request/response DTOs matching the backend's snake_case JSON
+    interceptor/         AuthInterceptor (adds the Bearer token)
+    mapper/              DTO -> domain model mapping
+    ApiCallExecutor      Runs calls, maps results, converts failures to AppError
+    ApiErrorParser       Reads backend ProblemDetails error bodies
+  repository/            Repository implementations
+domain/
+  common/                AppError, ResultCallback, Cancellable
+  model/                 Domain models used by the UI (never DTOs)
+  repository/            Repository interfaces
+presentation/
+  common/                UiState, Event, ErrorMessages
+  splash/ auth/ home/    One package per feature: Fragment + ViewModel
+```
+
+Flow: Fragment -> ViewModel (LiveData<UiState>) -> repository interface -> Retrofit. Fragments and ViewModels never call Retrofit directly. Navigation starts at Splash, which routes to the auth graph or, with stored tokens, the main graph (`res/navigation/`).
+
+Tokens are stored in app-private SharedPreferences and excluded from backup and device transfer. Network logging is debug-only at `BASIC` level (request line and status, no headers or bodies); do not raise it to `BODY`, which would log passwords and tokens. Expired access tokens are not refreshed automatically yet.
+
 ## Build
 
 From this directory in PowerShell:
@@ -19,13 +48,28 @@ From this directory in PowerShell:
 .\gradlew.bat assembleDebug
 ```
 
-The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. Override the development API URL centrally at build time with:
+Run unit tests and lint with `.\gradlew.bat testDebugUnitTest lintDebug`.
+
+The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. The backend URL is `BuildConfig.API_BASE_URL`, set from the `sportmateApiBaseUrl` Gradle property (default `http://localhost:5000/`):
+
+| Target | URL |
+|---|---|
+| Physical phone over USB with `adb reverse` | `http://localhost:5000/` (default) |
+| Android emulator | `http://10.0.2.2:5000/` |
+| Physical phone on the same Wi-Fi | `http://<computer-lan-ip>:5000/` |
+
+Pass it per build, or set it once for your machine in `%USERPROFILE%\.gradle\gradle.properties` (outside the repository, so personal addresses are never committed):
 
 ```powershell
-.\gradlew.bat assembleDebug -PsportmateApiBaseUrl=http://192.168.1.20:5000/
+.\gradlew.bat assembleDebug -PsportmateApiBaseUrl=http://10.0.2.2:5000/
 ```
 
-Replace the sample LAN address with the development computer's address. Debug builds permit cleartext HTTP for local development. Release builds disable cleartext HTTP and use a placeholder HTTPS endpoint that must be replaced before a real release.
+```properties
+# %USERPROFILE%\.gradle\gradle.properties
+sportmateApiBaseUrl=http://192.168.1.20:5000/
+```
+
+Debug builds permit cleartext HTTP for local development. Release builds disable cleartext HTTP and use a placeholder HTTPS endpoint that must be replaced before a real release.
 
 ## Physical phone over USB
 
