@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_home_to_my_bookings"
             app:destination="@id/myBookingsFragment" />
+        <action
+            android:id="@+id/action_home_to_play_requests"
+            app:destination="@id/playRequestsFragment" />
     </fragment>
 
     <fragment
@@ -107,4 +110,30 @@
             android:id="@+id/action_my_bookings_to_booking_detail"
             app:destination="@id/bookingDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/playRequestsFragment"
+        android:name="com.sportmate.app.presentation.playrequest.PlayRequestsFragment"
+        android:label="@string/play_requests_title">
+        <action
+            android:id="@+id/action_play_requests_to_detail"
+            app:destination="@id/playRequestDetailFragment" />
+        <action
+            android:id="@+id/action_play_requests_to_create"
+            app:destination="@id/createPlayRequestFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playRequestDetailFragment"
+        android:name="com.sportmate.app.presentation.playrequest.PlayRequestDetailFragment"
+        android:label="@string/play_detail_title">
+        <argument
+            android:name="playRequestId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPlayRequestFragment"
+        android:name="com.sportmate.app.presentation.playrequest.CreatePlayRequestFragment"
+        android:label="@string/play_create_title" />
 </navigation>

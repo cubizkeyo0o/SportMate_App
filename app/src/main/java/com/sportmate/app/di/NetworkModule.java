@@ -7,6 +7,7 @@ import com.sportmate.app.data.remote.api.AuthApi;
 import com.sportmate.app.data.remote.api.BookingApi;
 import com.sportmate.app.data.remote.api.CourtDiscoveryApi;
 import com.sportmate.app.data.remote.api.HealthApi;
+import com.sportmate.app.data.remote.api.PlayRequestApi;
 import com.sportmate.app.data.remote.api.SportApi;
 import com.sportmate.app.data.remote.api.UserApi;
 import com.sportmate.app.data.remote.interceptor.AuthInterceptor;
@@ -115,5 +116,11 @@ public final class NetworkModule {
     @Singleton
     public static BookingApi provideBookingApi(Retrofit retrofit) {
         return retrofit.create(BookingApi.class);
+    }
+
+    @Provides
+    @Singleton
+    public static PlayRequestApi providePlayRequestApi(Retrofit retrofit) {
+        return retrofit.create(PlayRequestApi.class);
     }
 }

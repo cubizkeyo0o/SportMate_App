@@ -25,6 +25,14 @@ public class UtcTimestampsTest {
     }
 
     @Test
+    public void parsesDateTimeOffsetsReturnedByPlayRequestApi() {
+        assertEquals(INSTANT, UtcTimestamps.parseDateTimeOffset("2099-10-05T10:00:00+07:00"));
+        assertEquals(INSTANT + 123,
+                UtcTimestamps.parseDateTimeOffset("2099-10-05T10:00:00.1234567+07:00"));
+        assertEquals(INSTANT, UtcTimestamps.parseDateTimeOffset("2099-10-05T03:00:00+00:00"));
+    }
+
+    @Test
     public void formatsWholeMinuteUtcInstants() {
         assertEquals("2099-10-05T03:00:00Z", UtcTimestamps.format(INSTANT));
         assertEquals("2099-10-05T04:30:00Z", UtcTimestamps.format(INSTANT + 90 * 60_000L));

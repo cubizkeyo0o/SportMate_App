@@ -5,6 +5,9 @@ import androidx.annotation.Nullable;
 
 import com.sportmate.app.data.remote.UtcTimestamps;
 import com.sportmate.app.data.remote.dto.BookingResponseDto;
+import com.sportmate.app.data.remote.dto.PlayRequestPageResponseDto;
+import com.sportmate.app.data.remote.dto.PlayRequestParticipantResponseDto;
+import com.sportmate.app.data.remote.dto.PlayRequestResponseDto;
 import com.sportmate.app.data.remote.dto.DiscoveredCourtResponseDto;
 import com.sportmate.app.data.remote.dto.DiscoveredCourtSportResponseDto;
 import com.sportmate.app.data.remote.dto.DiscoveredOperatingHourResponseDto;
@@ -18,6 +21,11 @@ import com.sportmate.app.domain.model.Court;
 import com.sportmate.app.domain.model.CourtSport;
 import com.sportmate.app.domain.model.CourtStatus;
 import com.sportmate.app.domain.model.OperatingHour;
+import com.sportmate.app.domain.model.ParticipantStatus;
+import com.sportmate.app.domain.model.PlayRequest;
+import com.sportmate.app.domain.model.PlayRequestPage;
+import com.sportmate.app.domain.model.PlayRequestParticipant;
+import com.sportmate.app.domain.model.PlayRequestStatus;
 import com.sportmate.app.domain.model.SkillLevel;
 import com.sportmate.app.domain.model.Sport;
 import com.sportmate.app.domain.model.User;
@@ -130,6 +138,105 @@ public final class DtoMapper {
             default:
                 throw new IllegalArgumentException("unmapped skill level");
         }
+    }
+
+    @NonNull
+    public static PlayRequestPage toPlayRequestPage(@Nullable PlayRequestPageResponseDto dto) {
+        if (dto == null || dto.items == null || dto.page == null || dto.pageSize == null || dto.totalCount == null) {
+            throw new IllegalStateException("play request page is incomplete");
+        }
+        List<PlayRequest> items = new ArrayList<>(dto.items.size());
+        for (PlayRequestResponseDto item : dto.items) {
+            items.add(toPlayRequest(item));
+        }
+        return new PlayRequestPage(items, dto.page, dto.pageSize, dto.totalCount);
+    }
+
+    @NonNull
+    public static PlayRequest toPlayRequest(@Nullable PlayRequestResponseDto dto) {
+        if (dto == null || dto.host == null || dto.spotsNeeded == null || dto.acceptedCount == null) {
+            throw new IllegalStateException("play request is incomplete");
+        }
+        List<PlayRequestParticipant> participants = new ArrayList<>();
+        if (dto.participants != null) {
+            for (PlayRequestParticipantResponseDto participant : dto.participants) {
+                participants.add(toPlayRequestParticipant(participant));
+            }
+        }
+        return new PlayRequest(
+                required(dto.id, "id"),
+                required(dto.sportId, "sport_id"),
+                required(dto.sportName, "sport_name"),
+                required(dto.sportSlug, "sport_slug"),
+                required(dto.title, "title"),
+                dto.description,
+                UtcTimestamps.parseDateTimeOffset(dto.startsAtUtc),
+                UtcTimestamps.parseDateTimeOffset(dto.endsAtUtc),
+                dto.spotsNeeded,
+                dto.acceptedCount,
+                dto.locationName,
+                nullableSkillLevel(dto.minSkillLevel),
+                nullableSkillLevel(dto.maxSkillLevel),
+                toPlayRequestStatus(dto.status),
+                required(dto.host.displayName, "host.display_name"),
+                nullableSkillLevel(dto.host.skillLevel),
+                nullableParticipantStatus(dto.myParticipantStatus),
+                participants,
+                dto.latitude,
+                dto.longitude,
+                UtcTimestamps.parseDateTimeOffset(dto.createdAtUtc),
+                UtcTimestamps.parseDateTimeOffset(dto.updatedAtUtc));
+    }
+
+    @NonNull
+    public static List<PlayRequestParticipant> toPlayRequestParticipants(
+            @NonNull List<PlayRequestParticipantResponseDto> dtos) {
+        List<PlayRequestParticipant> participants = new ArrayList<>(dtos.size());
+        for (PlayRequestParticipantResponseDto dto : dtos) {
+            participants.add(toPlayRequestParticipant(dto));
+        }
+        return Collections.unmodifiableList(participants);
+    }
+
+    @NonNull
+    private static PlayRequestParticipant toPlayRequestParticipant(@Nullable PlayRequestParticipantResponseDto dto) {
+        if (dto == null) {
+            throw new IllegalStateException("play request participant is missing");
+        }
+        return new PlayRequestParticipant(
+                required(dto.id, "participant.id"),
+                required(dto.displayName, "participant.display_name"),
+                nullableSkillLevel(dto.skillLevel),
+                toParticipantStatus(dto.status),
+                UtcTimestamps.parseDateTimeOffset(dto.requestedAtUtc));
+    }
+
+    @Nullable
+    private static SkillLevel nullableSkillLevel(@Nullable String value) {
+        return value == null ? null : toSkillLevel(value);
+    }
+
+    @Nullable
+    private static ParticipantStatus nullableParticipantStatus(@Nullable String value) {
+        return value == null ? null : toParticipantStatus(value);
+    }
+
+    @NonNull
+    private static PlayRequestStatus toPlayRequestStatus(@Nullable String value) {
+        if ("open".equals(value)) return PlayRequestStatus.OPEN;
+        if ("full".equals(value)) return PlayRequestStatus.FULL;
+        if ("cancelled".equals(value)) return PlayRequestStatus.CANCELLED;
+        if ("completed".equals(value)) return PlayRequestStatus.COMPLETED;
+        return PlayRequestStatus.UNKNOWN;
+    }
+
+    @NonNull
+    private static ParticipantStatus toParticipantStatus(@Nullable String value) {
+        if ("pending".equals(value)) return ParticipantStatus.PENDING;
+        if ("accepted".equals(value)) return ParticipantStatus.ACCEPTED;
+        if ("rejected".equals(value)) return ParticipantStatus.REJECTED;
+        if ("withdrawn".equals(value)) return ParticipantStatus.WITHDRAWN;
+        return ParticipantStatus.UNKNOWN;
     }
 
     @NonNull
